@@ -1,0 +1,12 @@
+This is rest-server for blog application that has the following functionality:<br>
+-Registration<br>
+-Authorization<br> 
+-Article view<br>
+-Article adding<br>
+-Article updating<br>
+-Article deleting<br>
+-Article visibility state changing<br>
+-Tag adding<br>
+-Article searching by tag<br>
+-Comments adding<br>
+-Article filtering<br>
