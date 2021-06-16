@@ -1,8 +1,5 @@
 package com.leverx.blog.data;
 
-import lombok.Builder;
-import lombok.Data;
-
 import java.util.Date;
 
 public class Article {
