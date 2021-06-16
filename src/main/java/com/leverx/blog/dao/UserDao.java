@@ -1,13 +1,14 @@
 package com.leverx.blog.dao;
 
-
-import com.leverx.blog.data.User;
-
+import com.leverx.blog.model.User;
 import java.util.List;
 
 public interface UserDao {
+    User getById(int id);
 
-    User getUserById(int id);
+    List<User> get();
 
-    List<User> getUsers();
+    User getByEmail(String email);
+
+    void create(User user);
 }

@@ -1,4 +1,4 @@
-package com.leverx.blog.data;
+package com.leverx.blog.model;
 
 public enum ArticleStatus {
     NEW,
