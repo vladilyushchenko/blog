@@ -1,15 +1,15 @@
-package com.leverx.blog.auth.registration;
+package com.leverx.blog.services;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
-@Component
+@Service
 @PropertySource(value = "classpath:mail.properties")
 public class MailSenderService {
     private final Properties props;
@@ -19,7 +19,7 @@ public class MailSenderService {
     public MailSenderService(Environment environment) {
         props = new Properties();
         props.put("mail.smtp.host", environment.getRequiredProperty("mail.smtp.host"));
-        props.put("mail.smtp.port",  environment.getRequiredProperty("mail.smtp.port"));
+        props.put("mail.smtp.port", environment.getRequiredProperty("mail.smtp.port"));
         props.put("mail.smtp.auth", environment.getRequiredProperty("mail.smtp.auth"));
         props.put("mail.smtp.starttls.enable", environment
                 .getRequiredProperty("mail.smtp.starttls.enable"));

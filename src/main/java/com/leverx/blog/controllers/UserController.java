@@ -1,7 +1,7 @@
 package com.leverx.blog.controllers;
 
 import com.leverx.blog.dao.UserDao;
-import com.leverx.blog.model.User;
+import com.leverx.blog.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

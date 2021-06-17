@@ -1,4 +1,4 @@
-package com.leverx.blog.model;
+package com.leverx.blog.entities;
 
 import java.util.Date;
 

@@ -1,12 +1,13 @@
 package com.leverx.blog.controllers;
 
-import com.leverx.blog.auth.registration.RegistrationForm;
 import com.leverx.blog.auth.registration.RegistrationService;
 import com.leverx.blog.auth.registration.UserAlreadyExistsException;
+import com.leverx.blog.dto.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 
 @RestController
 public class RegistrationController {
@@ -17,7 +18,7 @@ public class RegistrationController {
     }
 
     @PostMapping(value = "/register")
-    public HttpStatus register(@RequestBody RegistrationForm form) {
+    public HttpStatus register(@Valid @RequestBody UserDto form) {
         HttpStatus status = HttpStatus.ACCEPTED;
         try {
             registrationService.register(form);
@@ -27,9 +28,9 @@ public class RegistrationController {
         return status;
     }
 
-    @PostMapping("/register/confirm/{hash}")
-    public String confirm(@PathVariable("hash") int hash) {
+    @GetMapping("/register/confirm/{hash}")
+    public HttpStatus confirm(@PathVariable("hash") int hash) {
         registrationService.confirmAndCreate(hash);
-        return "Fine:)";
+        return HttpStatus.CREATED;
     }
 }

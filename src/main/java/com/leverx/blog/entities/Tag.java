@@ -1,4 +1,4 @@
-package com.leverx.blog.model;
+package com.leverx.blog.entities;
 
 public class Tag {
     private int id;

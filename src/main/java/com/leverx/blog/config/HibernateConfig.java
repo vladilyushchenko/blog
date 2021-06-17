@@ -47,7 +47,7 @@ public class HibernateConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("com.leverx.blog.data");
+        sessionFactory.setPackagesToScan("com.leverx.blog.entities");
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }

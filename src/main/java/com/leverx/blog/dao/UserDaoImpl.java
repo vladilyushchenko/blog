@@ -1,9 +1,10 @@
 package com.leverx.blog.dao;
 
-import com.leverx.blog.model.User;
+import com.leverx.blog.entities.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +12,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
-@Repository
+@Component
 public class UserDaoImpl implements UserDao {
     private final SessionFactory sessionFactory;
 
@@ -35,13 +37,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getByEmail(String email) {
+    public Optional<User> getByEmail(String email) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<User> cr = cb.createQuery(User.class);
         Root<User> root = cr.from(User.class);
         cr.select(root).where(cb.equal(root.get("email"), email));
-        return session.createQuery(cr).uniqueResult();
+        return Optional.of(session.createQuery(cr).uniqueResult());
     }
 
     @Override

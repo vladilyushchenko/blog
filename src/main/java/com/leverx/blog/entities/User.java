@@ -1,4 +1,4 @@
-package com.leverx.blog.model;
+package com.leverx.blog.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +15,7 @@ public class User {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
 
     @Column(name = "first_name")
     private String firstName;
