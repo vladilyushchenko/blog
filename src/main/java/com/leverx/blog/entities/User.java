@@ -33,5 +33,5 @@ public class User {
     private Date createdAt;
 
     @Column(name = "activated")
-    private Boolean activated;
+    private boolean activated = false;
 }

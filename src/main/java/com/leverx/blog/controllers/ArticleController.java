@@ -20,6 +20,6 @@ public class ArticleController {
 
     @GetMapping("/articles/{id}")
     public ResponseEntity<Article> getArticle(@PathVariable("id") int id) {
-        return new ResponseEntity<>(articleService.findById(id).get(), HttpStatus.OK);
+        return new ResponseEntity<>(articleService.findById(id), HttpStatus.OK);
     }
 }

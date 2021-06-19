@@ -2,12 +2,10 @@ package com.leverx.blog.services;
 
 import com.leverx.blog.dao.UserDao;
 import com.leverx.blog.entities.User;
-import com.leverx.blog.exceptions.UserNotFoundException;
+import com.leverx.blog.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,27 +18,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(int id) throws UserNotFoundException {
+    public User findById(int id) throws NotFoundException {
         Optional<User> user = userDao.findById(id);
         throwIfNotFound(user, String.format("No user with id %d", id));
         return user.get();
     }
 
     @Override
-    public User findByEmail(String email) throws UserNotFoundException {
+    public User findByEmail(String email) throws NotFoundException {
         Optional<User> user = userDao.findByEmail(email);
         throwIfNotFound(user, String.format("No user with email %s", email));
         return user.get();
     }
 
     @Override
-    public void create(User user) {
-        userDao.create(user);
+    public void persist(User user) {
+        userDao.persist(user);
     }
 
-    private void throwIfNotFound(Optional<User> user, String text) throws UserNotFoundException {
+    private void throwIfNotFound(Optional<User> user, String text) throws NotFoundException {
         if (user.isEmpty()) {
-            throw new UserNotFoundException(text);
+            throw new NotFoundException(text);
         }
     }
 }

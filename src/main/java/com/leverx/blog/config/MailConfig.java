@@ -18,6 +18,8 @@ public class MailConfig {
         props.put("mail.smtp.auth", environment.getProperty("auth"));
         props.put("mail.smtp.starttls.enable", environment
                 .getRequiredProperty("starttls.enable"));
+        props.put("user", environment.getProperty("user"));
+        props.put("password", environment.getProperty("password"));
         return props;
     }
 }

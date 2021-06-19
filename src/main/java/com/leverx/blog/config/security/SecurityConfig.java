@@ -12,22 +12,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity(debug = true)
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-//    private final UserDetailsServiceImpl userDetailsService;
-//
-//    public SecurityConfig(UserDetailsServiceImpl userDetailsService,
-//                          AuthenticationManagerBuilder auth) throws Exception {
-//        this.userDetailsService = userDetailsService;
-//        auth.userDetailsService(userDetailsService);
-//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .httpBasic().disable()
+//                .httpBasic().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/users/**").permitAll()
-                .antMatchers("/articles/**").hasAuthority(UserRole.ADMIN.name());
+                .antMatchers(HttpMethod.GET,"/users/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/my").hasRole(UserRole.USER.name())
+                .antMatchers(HttpMethod.DELETE, "/article/").hasRole(UserRole.USER.name());
     }
 
 }

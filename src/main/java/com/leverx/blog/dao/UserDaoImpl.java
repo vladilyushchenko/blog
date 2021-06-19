@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -36,12 +38,31 @@ public class UserDaoImpl implements UserDao {
         CriteriaQuery<User> cr = cb.createQuery(User.class);
         Root<User> root = cr.from(User.class);
         cr.select(root).where(cb.equal(root.get("email"), email));
-        return Optional.of(session.createQuery(cr).uniqueResult());
+        Query<User> query = session.createQuery(cr);
+        List<User> users = query.getResultList();
+        return Optional.ofNullable(users.get(0));
     }
 
     @Override
-    public void create(User user) {
+    public void persist(User user) {
         Session session = sessionFactory.getCurrentSession();
         session.persist(user);
+    }
+
+    @Override
+    public int save(User user) {
+        Session session = sessionFactory.getCurrentSession();
+        return (int) session.save(user);
+    }
+
+    @Override
+    public void updateActivatedById(int id) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaUpdate<User> criteria = builder.createCriteriaUpdate(User.class);
+        Root<User> root = criteria.from(User.class);
+        criteria.set(root.get("activated"), Boolean.TRUE);
+        criteria.where(builder.equal(root.get("id"), id));
+        session.createQuery(criteria).executeUpdate();
     }
 }

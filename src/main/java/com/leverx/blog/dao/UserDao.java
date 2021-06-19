@@ -9,5 +9,9 @@ public interface UserDao {
 
     Optional<User> findByEmail(String email);
 
-    void create(User user);
+    void persist(User user);
+
+    int save(User user);
+
+    void updateActivatedById(int id);
 }
