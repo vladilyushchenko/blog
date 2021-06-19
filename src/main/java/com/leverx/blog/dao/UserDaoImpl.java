@@ -3,19 +3,18 @@ package com.leverx.blog.dao;
 import com.leverx.blog.entities.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.List;
 import java.util.Optional;
 
-@Transactional
 @Component
+@Transactional
 public class UserDaoImpl implements UserDao {
     private final SessionFactory sessionFactory;
 
@@ -25,19 +24,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getById(int id) {
+    public Optional<User> findById(int id) {
         Session session = sessionFactory.getCurrentSession();
-        return session.get(User.class, id);
+        return Optional.ofNullable(session.get(User.class, id));
     }
 
     @Override
-    public List<User> get() {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from User", User.class).getResultList();
-    }
-
-    @Override
-    public Optional<User> getByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<User> cr = cb.createQuery(User.class);
