@@ -16,7 +16,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
     @Column(name = "first_name")
     private String firstName;
 
@@ -32,4 +31,7 @@ public class User {
     @Column(name = "created_at")
     @Temporal(TemporalType.DATE)
     private Date createdAt;
+
+    @Column(name = "activated")
+    private Boolean activated;
 }

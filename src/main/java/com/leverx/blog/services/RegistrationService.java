@@ -1,10 +1,11 @@
-package com.leverx.blog.auth.registration;
+package com.leverx.blog.services;
 
 import com.leverx.blog.dao.UserDao;
 import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.dto.UserMapping;
 import com.leverx.blog.entities.User;
-import com.leverx.blog.services.MailSenderService;
+import com.leverx.blog.exceptions.IncorrectEmailDataException;
+import com.leverx.blog.exceptions.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class RegistrationService {
         this.mailSender = mailSender;
     }
 
-    public void register(UserDto userDto) throws UserAlreadyExistsException, MessagingException {
+    public void register(UserDto userDto) {
         if (containsUser(userDto.getEmail())) {
             throw new UserAlreadyExistsException("Email already registered!");
         }
@@ -33,7 +34,11 @@ public class RegistrationService {
         newUser.setCreatedAt(new Date());
 
         int hash = newUser.hashCode();
-        sendConfirmMessage(userDto.getEmail(), hash);
+        try {
+            sendConfirmMessage(userDto.getEmail(), hash);
+        } catch (MessagingException e) {
+            throw new IncorrectEmailDataException(e);
+        }
         waitingForConfirm.put(hash, newUser);
     }
 
@@ -42,7 +47,7 @@ public class RegistrationService {
     }
 
     private boolean containsUser(String email) {
-        return userDao.getByEmail(email).isPresent();
+        return userDao.findByEmail(email).isPresent();
     }
 
     private void sendConfirmMessage(String email, int hash) throws MessagingException {

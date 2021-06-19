@@ -10,32 +10,23 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 @Service
-@PropertySource(value = "classpath:mail.properties")
 public class MailSenderService {
     private final Properties props;
-    private final String user;
-    private final String password;
 
-    public MailSenderService(Environment environment) {
-        props = new Properties();
-        props.put("mail.smtp.host", environment.getRequiredProperty("mail.smtp.host"));
-        props.put("mail.smtp.port", environment.getRequiredProperty("mail.smtp.port"));
-        props.put("mail.smtp.auth", environment.getRequiredProperty("mail.smtp.auth"));
-        props.put("mail.smtp.starttls.enable", environment
-                .getRequiredProperty("mail.smtp.starttls.enable"));
-        user = environment.getRequiredProperty("mail.user");
-        password = environment.getRequiredProperty("mail.password");
+    public MailSenderService(Properties mailProperties) {
+        this.props = mailProperties;
     }
 
     public void sendEmail(String to, String subject, String body) throws MessagingException {
         Session session = Session.getInstance(props,
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(user, password);
+                        return new PasswordAuthentication(props.getProperty("user"),
+                                props.getProperty("password"));
                     }
                 });
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(user));
+        message.setFrom(new InternetAddress(props.getProperty("user")));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
         message.setSubject(subject);
         message.setText(body);

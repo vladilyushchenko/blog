@@ -2,6 +2,8 @@ package com.leverx.blog.dao;
 
 import com.leverx.blog.entities.Article;
 
+import java.util.Optional;
+
 public interface ArticleDao {
-    Article getById(int id);
+    Optional<Article> getById(int id);
 }

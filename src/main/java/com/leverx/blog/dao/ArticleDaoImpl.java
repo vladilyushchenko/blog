@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional
 @Component
 public class ArticleDaoImpl implements ArticleDao {
@@ -18,7 +20,7 @@ public class ArticleDaoImpl implements ArticleDao {
     }
 
     @Override
-    public Article getById(int id) {
-        return sessionFactory.getCurrentSession().get(Article.class, id);
+    public Optional<Article> getById(int id) {
+        return Optional.ofNullable(sessionFactory.getCurrentSession().get(Article.class, id));
     }
 }
