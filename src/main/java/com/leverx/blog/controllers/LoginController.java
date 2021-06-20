@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoginController {
-    @GetMapping("/login")
-    public HttpStatus login(@RequestBody LoginDto loginDto) {
-        return HttpStatus.ACCEPTED;
+//    @GetMapping("/login")
+//    public HttpStatus login(@RequestBody LoginDto loginDto) {
+//        return HttpStatus.ACCEPTED;
+//    }
+
+    @GetMapping("/fail")
+    public HttpStatus failLogin() {
+        return HttpStatus.BAD_REQUEST;
     }
 }

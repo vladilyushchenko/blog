@@ -1,5 +1,7 @@
 package com.leverx.blog.config;
 
+import com.leverx.blog.entities.Role;
+import com.leverx.blog.entities.User;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +48,7 @@ public class HibernateConfig {
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        //sessionFactory.setAnnotatedClasses(User.class, Role.class);
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setPackagesToScan("com.leverx.blog.entities");
         sessionFactory.setHibernateProperties(hibernateProperties());
