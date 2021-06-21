@@ -1,15 +1,18 @@
-package com.leverx.blog.services;
+package com.leverx.blog.services.authorization;
 
 import com.leverx.blog.dao.UserDao;
 import com.leverx.blog.dto.UserDto;
-import com.leverx.blog.dto.UserMapping;
+import com.leverx.blog.dto.mapping.UserMapping;
+import com.leverx.blog.entities.Role;
 import com.leverx.blog.entities.User;
 import com.leverx.blog.exceptions.IncorrectEmailDataException;
 import com.leverx.blog.exceptions.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
@@ -20,13 +23,15 @@ public class RegistrationService {
     private final UserDao userDao;
     private final MailSenderService mailSender;
     private final Map<Integer, User> waitingForConfirm = new ConcurrentHashMap<>();
+    private final PasswordEncoder passwordEncoder;
 
     private static final int ONE_HOUR_IN_MILLIS = 86400000;
 
     @Autowired
-    public RegistrationService(UserDao userDao, MailSenderService mailSender) {
+    public RegistrationService(UserDao userDao, MailSenderService mailSender, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.mailSender = mailSender;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void register(UserDto userDto) {
@@ -35,12 +40,14 @@ public class RegistrationService {
         }
         User user = UserMapping.mapToUserEntity(userDto);
         user.setCreatedAt(new Date());
+        user.setPassword(cryptPassword(userDto.getPassword()));
+        user.setRoles(Collections.singleton(Role.USER_ROLE));
 
         int hash = user.hashCode();
-        sendConfirmMessage(userDto.getEmail(), hash);
 
-        int id = userDao.save(user);
+        userDao.save(user);
         waitingForConfirm.put(hash, user);
+        sendConfirmMessage(userDto.getEmail(), hash);
     }
 
     public void confirmAndCreate(int hash) {
@@ -58,7 +65,6 @@ public class RegistrationService {
     }
 
     private void sendConfirmMessage(String email, int hash) {
-
         try {
             mailSender.sendEmail(email, "News agency registration",
                     "Hello! Now you should confirm yourself via this link:" +
@@ -67,4 +73,9 @@ public class RegistrationService {
             throw new IncorrectEmailDataException(e);
         }
     }
+
+    private String cryptPassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
 }

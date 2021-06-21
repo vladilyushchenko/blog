@@ -1,7 +1,5 @@
-package com.leverx.blog.services;
+package com.leverx.blog.services.authorization;
 
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;

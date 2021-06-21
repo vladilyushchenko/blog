@@ -9,9 +9,13 @@ public interface UserDao {
 
     Optional<User> findByEmail(String email);
 
+    Optional<Integer> getIdByEmail(String email);
+
     void persist(User user);
 
     int save(User user);
 
     void updateActivatedById(int id);
+
+    void updatePasswordByEmail(String email, String password);
 }

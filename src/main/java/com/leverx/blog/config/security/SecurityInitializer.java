@@ -1,4 +1,4 @@
-package com.leverx.blog.config;
+package com.leverx.blog.config.security;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

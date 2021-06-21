@@ -6,10 +6,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class LoginDto {
+public class PasswordResetDto {
     @NotNull
-    @NotEmpty
-    private String email;
+    private Integer hash;
 
     @NotNull
     @NotEmpty

@@ -3,6 +3,7 @@ package com.leverx.blog.entities;
 import com.leverx.blog.entities.enums.ArticleStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -23,8 +24,9 @@ public class Article {
     @Column(name = "text")
     private String text;
 
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "article_status")
     @Enumerated(EnumType.STRING)
+    @Type(type = "com.leverx.blog.entities.enums.EnumTypePostgreSql")
     private ArticleStatus status;
 
     @Column(name = "author_id")

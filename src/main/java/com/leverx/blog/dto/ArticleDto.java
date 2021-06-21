@@ -6,12 +6,14 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class LoginDto {
+public class ArticleDto {
     @NotNull
     @NotEmpty
-    private String email;
+    private String title;
 
     @NotNull
     @NotEmpty
-    private String password;
+    private String text;
+
+    private String authorEmail;
 }

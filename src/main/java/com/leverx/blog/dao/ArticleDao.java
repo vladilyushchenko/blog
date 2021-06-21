@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface ArticleDao {
     Optional<Article> getById(int id);
+
+    void save(Article article);
 }

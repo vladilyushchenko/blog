@@ -40,7 +40,18 @@ public class UserDaoImpl implements UserDao {
         cr.select(root).where(cb.equal(root.get("email"), email));
         Query<User> query = session.createQuery(cr);
         List<User> users = query.getResultList();
+        if (users.isEmpty()) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(users.get(0));
+    }
+
+    @Override
+    public Optional<Integer> getIdByEmail(String email) {
+        Session session = sessionFactory.getCurrentSession();
+        return Optional.ofNullable((Integer) session
+                .createQuery("select user.id from User user where user.email = :email")
+                .setParameter("email", email).uniqueResult());
     }
 
     @Override
@@ -65,4 +76,16 @@ public class UserDaoImpl implements UserDao {
         criteria.where(builder.equal(root.get("id"), id));
         session.createQuery(criteria).executeUpdate();
     }
+
+    @Override
+    public void updatePasswordByEmail(String email, String password) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaUpdate<User> criteria = builder.createCriteriaUpdate(User.class);
+        Root<User> root = criteria.from(User.class);
+        criteria.set(root.get("password"), password);
+        criteria.where(builder.equal(root.get("email"), email));
+        session.createQuery(criteria).executeUpdate();
+    }
+
 }

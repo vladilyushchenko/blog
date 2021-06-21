@@ -1,6 +1,7 @@
 package com.leverx.blog.dao;
 
 import com.leverx.blog.entities.Article;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,5 +23,11 @@ public class ArticleDaoImpl implements ArticleDao {
     @Override
     public Optional<Article> getById(int id) {
         return Optional.ofNullable(sessionFactory.getCurrentSession().get(Article.class, id));
+    }
+
+    @Override
+    public void save(Article article) {
+        Session session = sessionFactory.getCurrentSession();
+        session.save(article);
     }
 }

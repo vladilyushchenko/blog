@@ -1,5 +1,6 @@
-package com.leverx.blog.dto;
+package com.leverx.blog.dto.mapping;
 
+import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.entities.User;
 import org.springframework.stereotype.Service;
 

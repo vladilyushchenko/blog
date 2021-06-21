@@ -1,4 +1,4 @@
-package com.leverx.blog.controllers.exceptionhandlers;
+package com.leverx.blog.controllers.controlleradvice;
 
 import com.leverx.blog.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
