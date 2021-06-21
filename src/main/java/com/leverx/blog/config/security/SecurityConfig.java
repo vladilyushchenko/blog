@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,26 +32,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET,"/my").hasAnyRole(Role.USER_ROLE.getName(),
-                                                                        Role.ADMIN_ROLE.getName())
-                .antMatchers(HttpMethod.GET,"/articles/**").hasAnyRole(Role.USER_ROLE.getName(),
-                                                                                Role.ADMIN_ROLE.getName())
-                .antMatchers(HttpMethod.DELETE, "/articles/**")
-                    .hasAnyRole(Role.USER_ROLE.getName(), Role.ADMIN_ROLE.getName())
-                .antMatchers(HttpMethod.POST, "/articles").hasAnyRole(Role.USER_ROLE.getName(),
-                                                                            Role.ADMIN_ROLE.getName())
+                .antMatchers(HttpMethod.GET,"/my").authenticated()
+                .antMatchers("/articles/**").authenticated()
                 .and()
                 .formLogin()
                 .and()
-                .logout()
-                    .logoutSuccessUrl("/");
-//                    .loginProcessingUrl("/login")
-//                    .defaultSuccessUrl("/")
-//                    .failureUrl("/fail");
-//            .and()
-//                .logout()
-//                    .logoutUrl("/logout");
+                .logout();
     }
+
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers(HttpMethod.GET, "/articles");
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

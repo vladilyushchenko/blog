@@ -47,7 +47,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<Integer> getIdByEmail(String email) {
+    public Optional<Integer> findIdByEmail(String email) {
         Session session = sessionFactory.getCurrentSession();
         return Optional.ofNullable((Integer) session
                 .createQuery("select user.id from User user where user.email = :email")

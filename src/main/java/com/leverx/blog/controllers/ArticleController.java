@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 public class ArticleController {
@@ -20,9 +21,14 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-    @GetMapping("/articles/{id}")
-    public ResponseEntity<Article> getArticle(@PathVariable("id") int id) {
-        return new ResponseEntity<>(articleService.findById(id), HttpStatus.OK);
+    @GetMapping("/my")
+    public ResponseEntity<List<Article>> getMyArticles(Principal principal) {
+        return new ResponseEntity<>(articleService.findArticlesByEmail(principal.getName()), HttpStatus.OK);
+    }
+
+    @GetMapping("/articles")
+    public ResponseEntity<List<Article>> getAllArticles() {
+        return new ResponseEntity<>(articleService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("/articles")
@@ -31,11 +37,16 @@ public class ArticleController {
         articleService.save(articleDto);
     }
 
-
+    @PutMapping("/articles/{id}")
+    public void updateArticle(@RequestBody ArticleDto articleDto,
+                              @PathVariable("id") int id,
+                              Principal principal) {
+        articleDto.setAuthorEmail(principal.getName());
+        articleService.updateById(articleDto, id);
+    }
 
     @DeleteMapping("/articles/{id}")
-    public String deleteArticle(@PathVariable("id") int id, Principal principal) {
-        return principal.getName();
-        //return HttpStatus.OK;
+    public void  deleteArticle(@PathVariable("id") int id, Principal principal) {
+        articleService.deleteById(id, principal.getName());
     }
 }

@@ -9,7 +9,7 @@ public interface UserDao {
 
     Optional<User> findByEmail(String email);
 
-    Optional<Integer> getIdByEmail(String email);
+    Optional<Integer> findIdByEmail(String email);
 
     void persist(User user);
 
