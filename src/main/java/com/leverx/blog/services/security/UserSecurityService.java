@@ -1,6 +1,6 @@
 package com.leverx.blog.services.security;
 
-import com.leverx.blog.dao.UserDao;
+import com.leverx.blog.repositories.UserRepository;
 import com.leverx.blog.entities.Role;
 import com.leverx.blog.entities.User;
 import com.leverx.blog.exceptions.UserNotActivatedException;
@@ -18,16 +18,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserSecurityService implements UserDetailsService {
-    private final UserDao userDao;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserSecurityService(UserDao userDao) {
-        this.userDao = userDao;
+    public UserSecurityService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> user = userDao.findByEmail(email);
+        Optional<User> user = userRepository.findUserByEmail(email);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException(String.format("User with email" +
                     " '%s' not found:(", email));

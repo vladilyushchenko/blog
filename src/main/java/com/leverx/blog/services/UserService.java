@@ -6,6 +6,4 @@ public interface UserService {
     User findById(int id);
 
     User findByEmail(String email);
-
-    void persist(User user);
 }

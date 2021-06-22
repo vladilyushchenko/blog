@@ -38,8 +38,7 @@ public class ArticleController {
     }
 
     @PutMapping("/articles/{id}")
-    public void updateArticle(@RequestBody ArticleDto articleDto,
-                              @PathVariable("id") int id,
+    public void updateArticle(@RequestBody ArticleDto articleDto, @PathVariable("id") int id,
                               Principal principal) {
         articleDto.setAuthorEmail(principal.getName());
         articleService.updateById(articleDto, id);

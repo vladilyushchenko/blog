@@ -1,6 +1,6 @@
 package com.leverx.blog.services.authorization;
 
-import com.leverx.blog.dao.UserDao;
+import com.leverx.blog.repositories.UserRepository;
 import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.dto.mapping.UserMapping;
 import com.leverx.blog.entities.Role;
@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class RegistrationService {
-    private final UserDao userDao;
+    private final UserRepository userRepository;
     private final MailSenderService mailSender;
     private final Map<Integer, User> waitingForConfirm = new ConcurrentHashMap<>();
     private final PasswordEncoder passwordEncoder;
@@ -28,24 +28,30 @@ public class RegistrationService {
     private static final int ONE_HOUR_IN_MILLIS = 86400000;
 
     @Autowired
-    public RegistrationService(UserDao userDao, MailSenderService mailSender, PasswordEncoder passwordEncoder) {
-        this.userDao = userDao;
+    public RegistrationService(UserRepository userRepository, MailSenderService mailSender, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.mailSender = mailSender;
         this.passwordEncoder = passwordEncoder;
     }
 
     public void register(UserDto userDto) {
-        if (userAlreadyExists(userDto.getEmail())) {
+        Optional<User> dbUser = userRepository.findUserByEmail(userDto.getEmail());
+        if (dbUser.isPresent() && dbUser.get().isActivated()) {
             throw new UserAlreadyExistsException("User already exists!");
         }
-        User user = UserMapping.mapToUserEntity(userDto);
-        user.setCreatedAt(new Date());
-        user.setPassword(cryptPassword(userDto.getPassword()));
-        user.setRoles(Collections.singleton(Role.USER_ROLE));
+
+        User user;
+        if (dbUser.isEmpty()) {
+            user = UserMapping.mapToUserEntity(userDto);
+            user.setCreatedAt(new Date());
+            user.setPassword(cryptPassword(userDto.getPassword()));
+            user.setRoles(Collections.singleton(Role.USER_ROLE));
+            userRepository.save(user);
+        } else {
+            user = dbUser.get();
+        }
 
         int hash = user.hashCode();
-
-        userDao.save(user);
         waitingForConfirm.put(hash, user);
         sendConfirmMessage(userDto.getEmail(), hash);
     }
@@ -53,15 +59,11 @@ public class RegistrationService {
     public void confirmAndCreate(int hash) {
         if (waitingForConfirm.containsKey(hash)) {
             User user = waitingForConfirm.get(hash);
+            user.setActivated(true);
             if (user.getCreatedAt().getTime() - new Date().getTime() < ONE_HOUR_IN_MILLIS) {
-                userDao.updateActivatedById(user.getId());
+                userRepository.save(user);
             }
         }
-    }
-
-    private boolean userAlreadyExists(String email) {
-        Optional<User> user = userDao.findByEmail(email);
-        return user.isPresent() && user.get().isActivated();
     }
 
     private void sendConfirmMessage(String email, int hash) {

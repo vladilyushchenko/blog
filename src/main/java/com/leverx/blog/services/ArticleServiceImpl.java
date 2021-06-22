@@ -1,7 +1,6 @@
 package com.leverx.blog.services;
 
-import com.leverx.blog.dao.ArticleDao;
-import com.leverx.blog.dao.UserDao;
+import com.leverx.blog.repositories.ArticleRepository;
 import com.leverx.blog.dto.ArticleDto;
 import com.leverx.blog.dto.mapping.ArticleMapping;
 import com.leverx.blog.entities.Article;
@@ -18,17 +17,17 @@ import java.util.Optional;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
-    private final ArticleDao articleDao;
+    private final ArticleRepository articleRepository;
     private final UserService userService;
 
-    public ArticleServiceImpl(ArticleDao articleDao, UserDao userDao, UserService userService) {
-        this.articleDao = articleDao;
+    public ArticleServiceImpl(ArticleRepository articleRepository, UserService userService) {
+        this.articleRepository = articleRepository;
         this.userService = userService;
     }
 
     @Override
     public Article findById(int id) {
-        Optional<Article> article = articleDao.findById(id);
+        Optional<Article> article = Optional.ofNullable(articleRepository.getOne(id));
         throwIfArticleNotFound(article, String.format("There is no article with id %d", id));
         return article.get();
     }
@@ -39,12 +38,12 @@ public class ArticleServiceImpl implements ArticleService {
         article.setAuthorId(getUserIdByEmail(articleDto.getAuthorEmail()));
         article.setCreatedAt(new Date());
         article.setStatus(ArticleStatus.PUBLIC);
-        articleDao.save(article);
+        articleRepository.save(article);
     }
 
     @Override
     public void updateById(ArticleDto articleDto, int id) {
-        Optional<Article> articleOpt = articleDao.findById(id);
+        Optional<Article> articleOpt = articleRepository.findById(id);
         throwIfArticleNotFound(articleOpt, String.format("There is no article with id %d", id));
         Article article = articleOpt.get();
         User editor = userService.findByEmail(articleDto.getAuthorEmail());
@@ -54,28 +53,23 @@ public class ArticleServiceImpl implements ArticleService {
         article.setText(articleDto.getText());
         article.setTitle(articleDto.getTitle());
         article.setUpdatedAt(new Date());
-        articleDao.update(article);
+        articleRepository.save(article);
     }
 
     @Override
     public List<Article> findAll() {
-        Optional<List<Article>> articles = articleDao.findAll();
-        if (articles.isEmpty()) {
-            throw new NotFoundException("No articles found :(");
-        }
-        return articles.get();
+        return articleRepository.findAll();
     }
 
     @Override
     public List<Article> findArticlesByEmail(String email) {
-        Optional<List<Article>> articles = articleDao.findByAuthorId(getUserIdByEmail(email));
-        return articles.get();
+        return articleRepository.findArticlesByAuthorId(getUserIdByEmail(email));
     }
 
     @Override
     public void deleteById(int id, String userEmail) {
         assertArticleExistsAndUserHasAccess(userEmail, id);
-        articleDao.deleteById(id);
+        articleRepository.deleteById(id);
     }
 
     private int getUserIdByEmail(String email) {
@@ -83,7 +77,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private void assertArticleExistsAndUserHasAccess(String email, int articleId) {
-        Optional<Article> articleOpt = articleDao.findById(articleId);
+        Optional<Article> articleOpt = articleRepository.findById(articleId);
         if (articleOpt.isEmpty()) {
             throw new NotFoundException(String.format("No article with id %d", articleId));
         }

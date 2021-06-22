@@ -1,7 +1,8 @@
 package com.leverx.blog.services.authorization;
 
-import com.leverx.blog.dao.UserDao;
+import com.leverx.blog.repositories.UserRepository;
 import com.leverx.blog.dto.PasswordResetDto;
+import com.leverx.blog.entities.User;
 import com.leverx.blog.exceptions.IncorrectEmailDataException;
 import com.leverx.blog.exceptions.NotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,12 +15,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class PasswordService {
     private Map<Integer, String> waitingForReset = new ConcurrentHashMap<>();
-    private final UserDao userDao;
+    private final UserRepository userRepository;
     private final MailSenderService mailSender;
     private final PasswordEncoder passwordEncoder;
 
-    public PasswordService(UserDao userDao, MailSenderService mailSender, PasswordEncoder passwordEncoder) {
-        this.userDao = userDao;
+    public PasswordService(UserRepository userRepository, MailSenderService mailSender, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.mailSender = mailSender;
         this.passwordEncoder = passwordEncoder;
     }
@@ -39,11 +40,14 @@ public class PasswordService {
                     resetDto.getHash()));
         }
         String email = waitingForReset.remove(resetDto.getHash());
-        userDao.updatePasswordByEmail(email, cryptPassword(resetDto.getPassword()));
+        User user = userRepository.findUserByEmail(email).get();
+        user.setPassword(cryptPassword(resetDto.getPassword()));
+        userRepository.save(user);
+        // in future make own query with @Query annotation
     }
 
     private boolean userExists(String email) {
-        return userDao.findByEmail(email).isPresent();
+        return userRepository.findUserByEmail(email).isPresent();
     }
 
     private void sendConfirmMessage(String email, int hash) {
