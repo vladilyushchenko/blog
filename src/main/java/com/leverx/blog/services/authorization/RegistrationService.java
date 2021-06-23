@@ -20,12 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class RegistrationService {
+    private static final int ONE_HOUR_IN_MILLIS = 86400000;
+
     private final UserRepository userRepository;
     private final MailSenderService mailSender;
     private final Map<Integer, User> waitingForConfirm = new ConcurrentHashMap<>();
     private final PasswordEncoder passwordEncoder;
-
-    private static final int ONE_HOUR_IN_MILLIS = 86400000;
 
     @Autowired
     public RegistrationService(UserRepository userRepository, MailSenderService mailSender, PasswordEncoder passwordEncoder) {

@@ -11,8 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class AuthorizationExceptionHandler {
     @ExceptionHandler(value = UserNotActivatedException.class)
-    protected @ResponseBody
-    ResponseEntity<String> handleUserAlreadyExistsException(
+    protected @ResponseBody ResponseEntity<String> handleUserAlreadyExistsException(
             RuntimeException exc, WebRequest request) {
         return new ResponseEntity<>(exc.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }

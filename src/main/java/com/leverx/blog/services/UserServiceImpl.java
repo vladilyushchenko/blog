@@ -20,20 +20,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(int id) throws NotFoundException {
         Optional<User> user = userRepository.findById(id);
-        throwIfNotFound(user, String.format("No user with id %d", id));
+        if (user.isEmpty()) {
+            throw new NotFoundException(String.format("No user with id %d", id));
+        }
         return user.get();
     }
 
     @Override
     public User findByEmail(String email) throws NotFoundException {
         Optional<User> user = userRepository.findUserByEmail(email);
-        throwIfNotFound(user, String.format("No user with email %s", email));
-        return user.get();
-    }
-
-    private void throwIfNotFound(Optional<User> user, String text) throws NotFoundException {
         if (user.isEmpty()) {
-            throw new NotFoundException(text);
+            throw new NotFoundException(String.format("No user with email %s", email));
         }
+        return user.get();
     }
 }

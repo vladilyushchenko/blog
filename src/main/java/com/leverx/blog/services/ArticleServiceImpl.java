@@ -1,16 +1,22 @@
 package com.leverx.blog.services;
 
-import com.leverx.blog.repositories.ArticleRepository;
 import com.leverx.blog.dto.ArticleDto;
+import com.leverx.blog.dto.ArticlePaginationDto;
 import com.leverx.blog.dto.mapping.ArticleMapping;
 import com.leverx.blog.entities.Article;
 import com.leverx.blog.entities.Role;
 import com.leverx.blog.entities.User;
 import com.leverx.blog.entities.enums.ArticleStatus;
+import com.leverx.blog.entities.enums.Order;
 import com.leverx.blog.exceptions.NotFoundException;
+import com.leverx.blog.repositories.ArticleRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,13 +32,6 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Article findById(int id) {
-        Optional<Article> article = Optional.ofNullable(articleRepository.getOne(id));
-        throwIfArticleNotFound(article, String.format("There is no article with id %d", id));
-        return article.get();
-    }
-
-    @Override
     public void save(ArticleDto articleDto) {
         Article article = ArticleMapping.mapToEntity(articleDto);
         article.setAuthorId(getUserIdByEmail(articleDto.getAuthorEmail()));
@@ -44,21 +43,18 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public void updateById(ArticleDto articleDto, int id) {
         Optional<Article> articleOpt = articleRepository.findById(id);
-        throwIfArticleNotFound(articleOpt, String.format("There is no article with id %d", id));
+        if (articleOpt.isEmpty()) {
+            throw new NotFoundException(String.format("There is no article with id %d", id));
+        }
         Article article = articleOpt.get();
         User editor = userService.findByEmail(articleDto.getAuthorEmail());
-        if (editor.getRoles().contains(Role.ADMIN_ROLE) || article.getAuthorId() != editor.getId()) {
+        if (!editor.getRoles().contains(Role.ADMIN_ROLE) && article.getAuthorId() != editor.getId()) {
             throw new AccessDeniedException("This post doesn't belong to you!");
         }
         article.setText(articleDto.getText());
         article.setTitle(articleDto.getTitle());
         article.setUpdatedAt(new Date());
         articleRepository.save(article);
-    }
-
-    @Override
-    public List<Article> findAll() {
-        return articleRepository.findAll();
     }
 
     @Override
@@ -70,6 +66,19 @@ public class ArticleServiceImpl implements ArticleService {
     public void deleteById(int id, String userEmail) {
         assertArticleExistsAndUserHasAccess(userEmail, id);
         articleRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Article> findAllByPaginationDto(ArticlePaginationDto paginationDto) {
+        Pageable pageable = PageRequest.of(
+                paginationDto.getSkip(),
+                paginationDto.getLimit(),
+                Sort.by(paginationDto.getSortField().name()));
+        List<Article> articles = articleRepository.findAllByAuthorId(paginationDto.getAuthorId(), pageable);
+        if (paginationDto.getOrder().equals(Order.desc)) {
+            Collections.reverse(articles);
+        }
+        return articles;
     }
 
     private int getUserIdByEmail(String email) {
@@ -84,12 +93,6 @@ public class ArticleServiceImpl implements ArticleService {
         User user = userService.findByEmail(email);
         if (!user.getRoles().contains(Role.ADMIN_ROLE) && articleOpt.get().getAuthorId() != user.getId()) {
             throw new AccessDeniedException("This post doesn't belong to you!");
-        }
-    }
-
-    private void throwIfArticleNotFound(Optional<Article> article, String text) throws NotFoundException {
-        if (article.isEmpty()) {
-            throw new NotFoundException(text);
         }
     }
 }

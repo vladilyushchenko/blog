@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class PasswordService {
-    private Map<Integer, String> waitingForReset = new ConcurrentHashMap<>();
+    private final Map<Integer, String> waitingForReset = new ConcurrentHashMap<>();
     private final UserRepository userRepository;
     private final MailSenderService mailSender;
     private final PasswordEncoder passwordEncoder;
