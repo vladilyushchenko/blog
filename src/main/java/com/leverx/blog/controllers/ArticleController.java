@@ -30,6 +30,10 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.findArticlesByEmail(principal.getName()));
     }
 
+    @GetMapping("/articles_by")
+    public ResponseEntity<List<ArticleDto>> getArticlesByTags(@RequestParam("tags")String[] tagNames) {
+        return ResponseEntity.ok(articleService.findAllByTagNames(tagNames));
+    }
 
     @GetMapping("/articles")
     public ResponseEntity<List<ArticleDto>> getFilteredArticles(

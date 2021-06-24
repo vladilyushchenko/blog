@@ -1,10 +1,11 @@
-package com.leverx.blog.services;
+package com.leverx.blog.services.impl;
 
 import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.dto.mapping.UserMapping;
 import com.leverx.blog.repositories.UserRepository;
 import com.leverx.blog.entities.User;
 import com.leverx.blog.exceptions.NotFoundException;
+import com.leverx.blog.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -8,6 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class ArticleDto {
@@ -29,5 +30,5 @@ public class ArticleDto {
 
     private Date updatedAt;
 
-    private List<Tag> tags;
+    private Set<Tag> tags;
 }

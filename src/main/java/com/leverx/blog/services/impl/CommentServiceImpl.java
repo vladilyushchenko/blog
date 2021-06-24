@@ -1,4 +1,4 @@
-package com.leverx.blog.services;
+package com.leverx.blog.services.impl;
 
 import com.leverx.blog.dto.CommentDto;
 import com.leverx.blog.dto.CommentPaginationDto;
@@ -9,6 +9,8 @@ import com.leverx.blog.entities.Comment;
 import com.leverx.blog.entities.enums.Order;
 import com.leverx.blog.exceptions.NotFoundException;
 import com.leverx.blog.repositories.CommentRepository;
+import com.leverx.blog.services.CommentService;
+import com.leverx.blog.services.UserService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

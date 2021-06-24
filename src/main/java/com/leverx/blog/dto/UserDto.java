@@ -3,14 +3,10 @@ package com.leverx.blog.dto;
 import com.leverx.blog.entities.Role;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 @Data
 public class UserDto {
@@ -34,7 +30,7 @@ public class UserDto {
 
     private Date createdAt;
 
-    private Collection<Role> roles;
+    private Set<Role> roles;
 }
 
 

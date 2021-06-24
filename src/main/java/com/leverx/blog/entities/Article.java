@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Table(name = "articles")
@@ -46,5 +47,5 @@ public class Article {
     @JoinTable(name = "tags_articles",
                 joinColumns = @JoinColumn(name = "article_id"),
                 inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private List<Tag> tags;
+    private Set<Tag> tags;
 }

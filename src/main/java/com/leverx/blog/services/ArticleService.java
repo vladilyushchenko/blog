@@ -16,4 +16,6 @@ public interface ArticleService {
     void deleteById(int id, String userEmail);
 
     List<ArticleDto> findAllByPaginationDto(ArticlePaginationDto paginationDto);
+
+    List<ArticleDto> findAllByTagNames(String[] tagNames);
 }

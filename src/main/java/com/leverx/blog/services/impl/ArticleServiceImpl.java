@@ -1,4 +1,4 @@
-package com.leverx.blog.services;
+package com.leverx.blog.services.impl;
 
 import com.leverx.blog.dto.ArticleDto;
 import com.leverx.blog.dto.ArticlePaginationDto;
@@ -12,6 +12,8 @@ import com.leverx.blog.entities.enums.Order;
 import com.leverx.blog.exceptions.NotFoundException;
 import com.leverx.blog.repositories.ArticleRepository;
 import com.leverx.blog.repositories.TagRepository;
+import com.leverx.blog.services.ArticleService;
+import com.leverx.blog.services.UserService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,10 +21,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,8 +98,18 @@ public class ArticleServiceImpl implements ArticleService {
         return articles.stream().map(ArticleMapping::mapToDto).collect(Collectors.toList());
     }
 
-    private void initTagsIfNotExist(List<Tag> tags) {
+    @Override
+    public List<ArticleDto> findAllByTagNames(String[] tagNames) {
+        return articleRepository.findDistinctByTags_NameIn(Set.of(tagNames))
+                .stream()
+                .distinct()
+                .map(ArticleMapping::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    private void initTagsIfNotExist(Set<Tag> tags) {
         for (Tag tag : tags) {
+
             Optional<Tag> tagEntity = tagRepository.findByName(tag.getName());
             tagEntity.ifPresentOrElse(
                     value->tag.setId(value.getId()),
