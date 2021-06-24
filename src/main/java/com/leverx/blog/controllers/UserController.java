@@ -1,6 +1,6 @@
 package com.leverx.blog.controllers;
 
-import com.leverx.blog.entities.User;
+import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,12 +20,12 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") int id) {
+    public ResponseEntity<UserDto> getUser(@PathVariable("id") int id) {
         return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
     }
 
     @GetMapping("/users")
-    public ResponseEntity<User> getUserByEmail(@RequestParam("email") String email) {
+    public ResponseEntity<UserDto> getUserByEmail(@RequestParam("email") String email) {
         return new ResponseEntity<>(userService.findByEmail(email), HttpStatus.OK);
     }
 }

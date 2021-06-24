@@ -1,14 +1,11 @@
 package com.leverx.blog.controllers;
 
+import com.leverx.blog.dto.ArticleDto;
 import com.leverx.blog.dto.ArticlePaginationDto;
 import com.leverx.blog.entities.enums.ArticleSortField;
 import com.leverx.blog.entities.enums.Order;
-import com.leverx.blog.dto.ArticleDto;
-import com.leverx.blog.entities.Article;
 import com.leverx.blog.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+
+import static com.leverx.blog.controllers.FilterConstants.*;
 
 @RestController
 public class ArticleController {
@@ -27,42 +26,40 @@ public class ArticleController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<Article>> getMyArticles(Principal principal) {
-        return new ResponseEntity<>(articleService.findArticlesByEmail(principal.getName()), HttpStatus.OK);
+    public ResponseEntity<List<ArticleDto>> getMyArticles(Principal principal) {
+        return ResponseEntity.ok(articleService.findArticlesByEmail(principal.getName()));
     }
 
 
     @GetMapping("/articles")
-    public ResponseEntity<List<Article>> getFilteredArticles(
-                                    @RequestParam("skip") int skip,
-                                    @RequestParam("limit") int limit,
-                                    @RequestParam("author") int authorId,
-                                    @RequestParam("sort") ArticleSortField sortField,
-                                    @RequestParam("order") Order order) {
+    public ResponseEntity<List<ArticleDto>> getFilteredArticles(
+                                @RequestParam(value = "skip", defaultValue = DEFAULT_SKIP) int skip,
+                                @RequestParam(value = "limit", defaultValue = DEFAULT_LIMIT) int limit,
+                                @RequestParam(value = "author") int authorId,
+                                @RequestParam(value = "sort", defaultValue = DEFAULT_SORT) ArticleSortField sortField,
+                                @RequestParam(value = "order", defaultValue = DEFAULT_ORDER) Order order) {
         ArticlePaginationDto paginationDto = ArticlePaginationDto.builder()
                 .skip(skip)
                 .limit(limit)
                 .authorId(authorId)
                 .sortField(sortField)
                 .order(order).build();
-        return new ResponseEntity<>(articleService.findAllByPaginationDto(paginationDto), HttpStatus.OK);
+        return ResponseEntity.ok(articleService.findAllByPaginationDto(paginationDto));
     }
 
     @PostMapping("/articles")
-    public void postArticle(@Valid @RequestBody ArticleDto articleDto, Principal principal) {
-        articleDto.setAuthorEmail(principal.getName());
-        articleService.save(articleDto);
+    public ResponseEntity<ArticleDto> postArticle(@Valid @RequestBody ArticleDto articleDto, Principal principal) {
+        return ResponseEntity.ok(articleService.save(articleDto, principal.getName()));
     }
 
     @PutMapping("/articles/{id}")
-    public void updateArticle(@RequestBody ArticleDto articleDto, @PathVariable("id") int id,
+    public void updateArticle(@Valid @RequestBody ArticleDto articleDto, @PathVariable("id") int id,
                               Principal principal) {
-        articleDto.setAuthorEmail(principal.getName());
-        articleService.updateById(articleDto, id);
+        articleService.updateById(articleDto, id, principal.getName());
     }
 
     @DeleteMapping("/articles/{id}")
-    public void  deleteArticle(@PathVariable("id") int id, Principal principal) {
+    public void deleteArticle(@PathVariable("id") int id, Principal principal) {
         articleService.deleteById(id, principal.getName());
     }
 }

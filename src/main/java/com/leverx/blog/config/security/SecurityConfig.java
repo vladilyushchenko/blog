@@ -1,7 +1,5 @@
 package com.leverx.blog.config.security;
 
-import com.leverx.blog.entities.Role;
-import com.leverx.blog.services.security.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -42,7 +40,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers(HttpMethod.GET, "/articles");
+        web
+            .ignoring()
+                .antMatchers(HttpMethod.GET, "/articles")
+                .antMatchers(HttpMethod.GET, "/articles/**/comments/**")
+                .antMatchers(HttpMethod.GET, "/articles/**/comments/");
     }
 
 

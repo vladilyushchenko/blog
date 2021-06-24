@@ -42,7 +42,7 @@ public class RegistrationService {
 
         User user;
         if (dbUser.isEmpty()) {
-            user = UserMapping.mapToUserEntity(userDto);
+            user = UserMapping.mapToEntity(userDto);
             user.setCreatedAt(new Date());
             user.setPassword(cryptPassword(userDto.getPassword()));
             user.setRoles(Collections.singleton(Role.USER_ROLE));

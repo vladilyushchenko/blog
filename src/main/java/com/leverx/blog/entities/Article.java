@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Table(name = "articles")
@@ -39,4 +41,10 @@ public class Article {
     @Column(name = "updated_at")
     @Temporal(TemporalType.DATE)
     private Date updatedAt;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "tags_articles",
+                joinColumns = @JoinColumn(name = "article_id"),
+                inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private List<Tag> tags;
 }

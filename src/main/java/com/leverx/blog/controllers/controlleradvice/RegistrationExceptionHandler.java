@@ -1,7 +1,6 @@
 package com.leverx.blog.controllers.controlleradvice;
 
 import com.leverx.blog.exceptions.UserAlreadyExistsException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,9 +28,4 @@ public class RegistrationExceptionHandler extends ResponseEntityExceptionHandler
         return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = ConstraintViolationException.class)
-    protected @ResponseBody ResponseEntity<String> handleConstraintException(
-            RuntimeException exc, WebRequest request) {
-        return new ResponseEntity<>(CONSTRAINT_MESSAGE, HttpStatus.BAD_REQUEST);
-    }
 }

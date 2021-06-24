@@ -1,4 +1,4 @@
-package com.leverx.blog.services.security;
+package com.leverx.blog.config.security;
 
 import com.leverx.blog.repositories.UserRepository;
 import com.leverx.blog.entities.Role;

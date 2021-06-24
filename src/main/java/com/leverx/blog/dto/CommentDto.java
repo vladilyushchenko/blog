@@ -4,18 +4,18 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Data
 public class CommentDto {
+    private int id;
     @NotEmpty
     @NotNull
     private String message;
 
-    @NotEmpty
-    @NotNull
     private int articleId;
 
-    @NotEmpty
-    @NotNull
     private int authorId;
+
+    private Date createdAt;
 }

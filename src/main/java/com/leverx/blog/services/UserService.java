@@ -1,9 +1,11 @@
 package com.leverx.blog.services;
 
-import com.leverx.blog.entities.User;
+import com.leverx.blog.dto.UserDto;
 
 public interface UserService {
-    User findById(int id);
+    UserDto findById(int id);
 
-    User findByEmail(String email);
+    UserDto findByEmail(String email);
+
+    int findIdByEmail(String email);
 }

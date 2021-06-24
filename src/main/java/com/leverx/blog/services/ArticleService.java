@@ -7,13 +7,13 @@ import com.leverx.blog.entities.Article;
 import java.util.List;
 
 public interface ArticleService {
-    void save(ArticleDto articleDto);
+    ArticleDto save(ArticleDto articleDto, String authorEmail);
 
-    void updateById(ArticleDto articleDto, int id);
+    void updateById(ArticleDto articleDto, int id, String editorEmail);
 
-    List<Article> findArticlesByEmail(String email);
+    List<ArticleDto> findArticlesByEmail(String email);
 
     void deleteById(int id, String userEmail);
 
-    List<Article> findAllByPaginationDto(ArticlePaginationDto paginationDto);
+    List<ArticleDto> findAllByPaginationDto(ArticlePaginationDto paginationDto);
 }
