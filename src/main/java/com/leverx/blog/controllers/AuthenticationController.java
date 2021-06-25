@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthenticationController {
     private final RegistrationService registrationService;
     private final PasswordService passwordService;
@@ -22,23 +23,23 @@ public class AuthenticationController {
         this.passwordService = passwordService;
     }
 
-    @PostMapping(value = "/auth")
+    @PostMapping
     public ResponseEntity<UserDto> register(@Valid @RequestBody UserDto form) {
         registrationService.register(form);
         return new ResponseEntity<>(form, HttpStatus.OK);
     }
 
-    @GetMapping("/auth/confirm/{hash}")
-    public void confirm(@PathVariable("hash") int hash) {
+    @GetMapping("/confirm/{hash}")
+    public void confirm(@PathVariable int hash) {
         registrationService.confirmAndCreate(hash);
     }
 
-    @PostMapping("/auth/forgot_password")
-    public void forgotPassword(@RequestParam("email") String email) {
+    @PostMapping("/forgot_password")
+    public void forgotPassword(@RequestParam String email) {
         passwordService.reset(email);
     }
 
-    @PostMapping("/auth/reset")
+    @PostMapping("/reset")
     public void forgotPassword(@Valid @RequestBody PasswordResetDto resetDto) {
         passwordService.confirmReset(resetDto);
     }

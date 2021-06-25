@@ -57,13 +57,13 @@ public class ArticleController {
     }
 
     @PutMapping("/articles/{id}")
-    public void updateArticle(@Valid @RequestBody ArticleDto articleDto, @PathVariable("id") int id,
+    public void updateArticle(@Valid @RequestBody ArticleDto articleDto, @PathVariable int id,
                               Principal principal) {
         articleService.updateById(articleDto, id, principal.getName());
     }
 
     @DeleteMapping("/articles/{id}")
-    public void deleteArticle(@PathVariable("id") int id, Principal principal) {
+    public void deleteArticle(@PathVariable int id, Principal principal) {
         articleService.deleteById(id, principal.getName());
     }
 }

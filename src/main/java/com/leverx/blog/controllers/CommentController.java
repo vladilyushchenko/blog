@@ -17,6 +17,7 @@ import java.util.List;
 import static com.leverx.blog.controllers.FilterConstants.*;
 
 @RestController
+@RequestMapping("/articles/{articleId}/comments")
 public class CommentController {
     private final CommentService commentService;
     private final UserService userService;
@@ -26,7 +27,7 @@ public class CommentController {
         this.userService = userService;
     }
 
-    @PostMapping("/articles/{articleId}/comments")
+    @PostMapping
     public ResponseEntity<CommentDto> postCommentByArticleId(@PathVariable int articleId,
                                                              @Valid @RequestBody CommentDto commentDto,
                                                              Principal principal) {
@@ -36,20 +37,20 @@ public class CommentController {
 
     }
 
-    @GetMapping("/articles/{articleId}/comments/{commentId}")
+    @GetMapping("/{commentId}")
     public ResponseEntity<CommentDto> getCommentsByArticleId(@PathVariable int articleId,
                                                           @PathVariable int commentId) {
         return ResponseEntity.ok(commentService.findCommentById(commentId));
     }
 
-    @DeleteMapping("/articles/{articleId}/comments/{commentId}")
+    @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable int articleId,
                               @PathVariable int commentId,
                               Principal principal) {
         commentService.deleteById(commentId, principal.getName());
     }
 
-    @GetMapping("/articles/{articleId}/comments")
+    @GetMapping
     public ResponseEntity<List<CommentDto>> getFilteredComments(
                                 @PathVariable int articleId,
                                 @RequestParam(value = "skip", defaultValue = DEFAULT_SKIP) int skip,

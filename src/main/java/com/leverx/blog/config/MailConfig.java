@@ -13,6 +13,7 @@ public class MailConfig {
     @Bean
     public Properties mailProperties(Environment environment) {
         Properties props = new Properties();
+
         props.put("mail.smtp.host", environment.getProperty("host"));
         props.put("mail.smtp.port", environment.getProperty("port"));
         props.put("mail.smtp.auth", environment.getProperty("auth"));

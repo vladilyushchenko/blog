@@ -1,12 +1,12 @@
 package com.leverx.blog.services.authorization;
 
-import com.leverx.blog.repositories.UserRepository;
 import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.dto.mapping.UserMapping;
 import com.leverx.blog.entities.Role;
 import com.leverx.blog.entities.User;
 import com.leverx.blog.exceptions.IncorrectEmailDataException;
 import com.leverx.blog.exceptions.UserAlreadyExistsException;
+import com.leverx.blog.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,22 +15,24 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class RegistrationService {
+    private static final String CONFIRM_MESSAGE_WITHOUT_HASH =
+            "Hello! Now you should confirm yourself via this link: " +
+                    "http://localhost:8080/auth/confirm/";
+    private static final String CONFIRM_TOPIC = "News agency registration";
+
     private final UserRepository userRepository;
     private final MailSenderService mailSender;
     private final PasswordEncoder passwordEncoder;
-
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Autowired
     public RegistrationService(UserRepository userRepository, MailSenderService mailSender,
-                               PasswordEncoder passwordEncoder, RedisTemplate<String, Object> redisTemplate) {
+                               PasswordEncoder passwordEncoder, RedisTemplate<Object, Object> redisTemplate) {
         this.userRepository = userRepository;
         this.mailSender = mailSender;
         this.passwordEncoder = passwordEncoder;
@@ -54,22 +56,20 @@ public class RegistrationService {
         }
 
         int hash = user.hashCode();
-        redisTemplate.opsForValue().set(String.valueOf(hash), user.getId(), 24, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(hash, user.getId(), 24, TimeUnit.HOURS);
         sendConfirmMessage(userDto.getEmail(), hash);
     }
 
     public void confirmAndCreate(int hash) {
-        if (redisTemplate.hasKey(String.valueOf(hash))) {
-            int userId = Integer.parseInt(String.valueOf(redisTemplate.opsForValue().get(String.valueOf(hash))));
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(hash))) {
+            int userId = Integer.parseInt(String.valueOf(redisTemplate.opsForValue().get(hash)));
             userRepository.setActivatedById(userId, true);
         }
     }
 
     private void sendConfirmMessage(String email, int hash) {
         try {
-            mailSender.sendEmail(email, "News agency registration",
-                    "Hello! Now you should confirm yourself via this link:" +
-                            " http://localhost:8080/auth/confirm/" + hash);
+            mailSender.sendEmail(email, CONFIRM_TOPIC, CONFIRM_MESSAGE_WITHOUT_HASH + hash);
         } catch (MessagingException e) {
             throw new IncorrectEmailDataException(e);
         }
