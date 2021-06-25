@@ -3,6 +3,7 @@ package com.leverx.blog.services;
 import com.leverx.blog.dto.ArticleDto;
 import com.leverx.blog.dto.ArticlePaginationDto;
 import com.leverx.blog.entities.Article;
+import org.springframework.data.util.Pair;
 
 import java.util.List;
 

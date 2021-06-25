@@ -17,6 +17,7 @@ import com.leverx.blog.services.UserService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Pair;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,7 +110,6 @@ public class ArticleServiceImpl implements ArticleService {
 
     private void initTagsIfNotExist(Set<Tag> tags) {
         for (Tag tag : tags) {
-
             Optional<Tag> tagEntity = tagRepository.findByName(tag.getName());
             tagEntity.ifPresentOrElse(
                     value->tag.setId(value.getId()),
