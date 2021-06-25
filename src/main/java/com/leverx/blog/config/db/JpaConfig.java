@@ -1,4 +1,4 @@
-package com.leverx.blog.config;
+package com.leverx.blog.config.db;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

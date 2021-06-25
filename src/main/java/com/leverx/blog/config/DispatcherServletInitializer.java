@@ -1,5 +1,6 @@
 package com.leverx.blog.config;
 
+import com.leverx.blog.config.db.JpaConfig;
 import com.leverx.blog.config.security.SecurityConfig;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;

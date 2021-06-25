@@ -8,6 +8,7 @@ import com.leverx.blog.entities.User;
 import com.leverx.blog.exceptions.IncorrectEmailDataException;
 import com.leverx.blog.exceptions.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,21 +18,23 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RegistrationService {
-    private static final int ONE_HOUR_IN_MILLIS = 86400000;
-
     private final UserRepository userRepository;
     private final MailSenderService mailSender;
-    private final Map<Integer, User> waitingForConfirm = new ConcurrentHashMap<>();
     private final PasswordEncoder passwordEncoder;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    public RegistrationService(UserRepository userRepository, MailSenderService mailSender, PasswordEncoder passwordEncoder) {
+    public RegistrationService(UserRepository userRepository, MailSenderService mailSender,
+                               PasswordEncoder passwordEncoder, RedisTemplate<String, Object> redisTemplate) {
         this.userRepository = userRepository;
         this.mailSender = mailSender;
         this.passwordEncoder = passwordEncoder;
+        this.redisTemplate = redisTemplate;
     }
 
     public void register(UserDto userDto) {
@@ -39,30 +42,26 @@ public class RegistrationService {
         if (dbUser.isPresent() && dbUser.get().isActivated()) {
             throw new UserAlreadyExistsException("User already exists!");
         }
-
         User user;
         if (dbUser.isEmpty()) {
             user = UserMapping.mapToEntity(userDto);
             user.setCreatedAt(new Date());
             user.setPassword(cryptPassword(userDto.getPassword()));
             user.setRoles(Collections.singleton(Role.USER_ROLE));
-            userRepository.save(user);
+            user = userRepository.save(user);
         } else {
             user = dbUser.get();
         }
 
         int hash = user.hashCode();
-        waitingForConfirm.put(hash, user);
+        redisTemplate.opsForValue().set(String.valueOf(hash), user.getId(), 24, TimeUnit.HOURS);
         sendConfirmMessage(userDto.getEmail(), hash);
     }
 
     public void confirmAndCreate(int hash) {
-        if (waitingForConfirm.containsKey(hash)) {
-            User user = waitingForConfirm.get(hash);
-            user.setActivated(true);
-            if (user.getCreatedAt().getTime() - new Date().getTime() < ONE_HOUR_IN_MILLIS) {
-                userRepository.save(user);
-            }
+        if (redisTemplate.hasKey(String.valueOf(hash))) {
+            int userId = Integer.parseInt(String.valueOf(redisTemplate.opsForValue().get(String.valueOf(hash))));
+            userRepository.setActivatedById(userId, true);
         }
     }
 
@@ -70,7 +69,7 @@ public class RegistrationService {
         try {
             mailSender.sendEmail(email, "News agency registration",
                     "Hello! Now you should confirm yourself via this link:" +
-                            "http://localhost:8080/register/confirm/" + hash);
+                            " http://localhost:8080/auth/confirm/" + hash);
         } catch (MessagingException e) {
             throw new IncorrectEmailDataException(e);
         }
