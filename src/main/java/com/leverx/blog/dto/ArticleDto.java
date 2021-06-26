@@ -1,13 +1,12 @@
 package com.leverx.blog.dto;
 
-import com.leverx.blog.entities.Tag;
-import com.leverx.blog.entities.enums.ArticleStatus;
+import com.leverx.blog.entity.Tag;
+import com.leverx.blog.entity.enums.ArticleStatus;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Data

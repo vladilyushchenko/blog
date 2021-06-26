@@ -1,7 +1,7 @@
 package com.leverx.blog.dto.mapping;
 
 import com.leverx.blog.dto.CommentDto;
-import com.leverx.blog.entities.Comment;
+import com.leverx.blog.entity.Comment;
 
 public class CommentMapping {
     public static Comment mapToEntity(CommentDto commentDto) {

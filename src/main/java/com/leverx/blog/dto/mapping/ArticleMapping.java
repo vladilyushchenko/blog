@@ -1,7 +1,7 @@
 package com.leverx.blog.dto.mapping;
 
 import com.leverx.blog.dto.ArticleDto;
-import com.leverx.blog.entities.Article;
+import com.leverx.blog.entity.Article;
 import org.springframework.stereotype.Service;
 
 @Service

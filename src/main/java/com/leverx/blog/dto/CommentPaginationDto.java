@@ -1,7 +1,7 @@
 package com.leverx.blog.dto;
 
-import com.leverx.blog.entities.enums.CommentSortField;
-import com.leverx.blog.entities.enums.Order;
+import com.leverx.blog.entity.enums.CommentSortField;
+import com.leverx.blog.entity.enums.Order;
 import lombok.Builder;
 import lombok.Data;
 

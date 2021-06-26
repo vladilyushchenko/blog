@@ -24,7 +24,7 @@ import static org.hibernate.cfg.AvailableSettings.*;
 @EnableTransactionManagement
 @PropertySource({"classpath:db.properties"})
 @ComponentScan({"com.leverx.blog"})
-@EnableJpaRepositories(basePackages = "com.leverx.blog.repositories")
+@EnableJpaRepositories(basePackages = "com.leverx.blog.repository")
 public class JpaConfig {
     private final Environment env;
 

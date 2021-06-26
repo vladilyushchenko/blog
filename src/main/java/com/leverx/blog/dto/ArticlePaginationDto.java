@@ -1,7 +1,7 @@
 package com.leverx.blog.dto;
 
-import com.leverx.blog.entities.enums.ArticleSortField;
-import com.leverx.blog.entities.enums.Order;
+import com.leverx.blog.entity.enums.ArticleSortField;
+import com.leverx.blog.entity.enums.Order;
 import lombok.Builder;
 import lombok.Data;
 

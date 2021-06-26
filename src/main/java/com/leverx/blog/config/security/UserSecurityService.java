@@ -1,9 +1,9 @@
 package com.leverx.blog.config.security;
 
-import com.leverx.blog.repositories.UserRepository;
-import com.leverx.blog.entities.Role;
-import com.leverx.blog.entities.User;
-import com.leverx.blog.exceptions.UserNotActivatedException;
+import com.leverx.blog.repository.UserRepository;
+import com.leverx.blog.entity.Role;
+import com.leverx.blog.entity.User;
+import com.leverx.blog.exception.UserNotActivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

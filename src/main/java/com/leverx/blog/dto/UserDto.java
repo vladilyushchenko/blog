@@ -1,6 +1,6 @@
 package com.leverx.blog.dto;
 
-import com.leverx.blog.entities.Role;
+import com.leverx.blog.entity.Role;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
