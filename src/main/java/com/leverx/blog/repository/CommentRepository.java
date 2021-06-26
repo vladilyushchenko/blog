@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
-    List<Comment> findCommentsByArticleId(int authorId);
+    List<Comment> findAllByArticleId(int articleId);
 
     @Query("select c.authorId from Comment c where c.id = :commentId")
-    Optional<Integer> findAuthorIdByArticleId(@Param("commentId") int commentId);
+    Optional<Integer> findAuthorIdByCommentId(@Param("commentId") int commentId);
 
     List<Comment> findAllByAuthorIdAndArticleId(int authorId, int articleId, Pageable pageable);
 }

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.leverx.blog.controller.FilterConstants.ALL_AUTHORS;
+
 @Service
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
@@ -50,14 +52,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDto> findCommentsByArticleId(int articleId) {
-        List<Comment> comments = commentRepository.findCommentsByArticleId(articleId);
+        List<Comment> comments = commentRepository.findAllByArticleId(articleId);
         return comments.stream().map(CommentMapping::mapToDto).collect(Collectors.toList());
     }
 
     @Override
     public void deleteById(int id, String editorEmail) {
         int editorId = userService.findIdByEmail(editorEmail);
-        Optional<Integer> authorId = commentRepository.findAuthorIdByArticleId(id);
+        Optional<Integer> authorId = commentRepository.findAuthorIdByCommentId(id);
         if (authorId.isEmpty()) {
             throw new NotFoundException(String.format("There is no article with id %d", id));
         }
@@ -69,16 +71,23 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDto> findAllByPaginationDto(CommentPaginationDto paginationDto) {
-        Pageable pageable = PageRequest.of(
-                paginationDto.getSkip(),
-                paginationDto.getLimit(),
+        Pageable pageable = PageRequest.of(paginationDto.getSkip(), paginationDto.getLimit(),
                 Sort.by(paginationDto.getSortField().name()));
-        List<Comment> articles = commentRepository.findAllByAuthorIdAndArticleId(
-                paginationDto.getAuthorId(),
-                paginationDto.getArticleId(), pageable);
-        if (paginationDto.getOrder().equals(Order.desc)) {
-            Collections.reverse(articles);
+        List<Comment> comments = getComments(paginationDto, pageable);
+        return comments.stream().map(CommentMapping::mapToDto).collect(Collectors.toList());
+    }
+
+    private List<Comment> getComments(CommentPaginationDto paginationDto, Pageable pageable) {
+        List<Comment> comments;
+        if (paginationDto.getAuthorId() == Integer.parseInt(ALL_AUTHORS)) {
+            comments = commentRepository.findAllByArticleId(paginationDto.getArticleId());
+        } else {
+            comments = commentRepository.findAllByAuthorIdAndArticleId(paginationDto.getAuthorId(),
+                    paginationDto.getArticleId(), pageable);
         }
-        return articles.stream().map(CommentMapping::mapToDto).collect(Collectors.toList());
+        if (paginationDto.getOrder().equals(Order.desc)) {
+            Collections.reverse(comments);
+        }
+        return comments;
     }
 }

@@ -55,7 +55,7 @@ public class CommentController {
                                 @PathVariable int articleId,
                                 @RequestParam(value = "skip", defaultValue = DEFAULT_SKIP) int skip,
                                 @RequestParam(value = "limit", defaultValue = DEFAULT_LIMIT) int limit,
-                                @RequestParam(value = "author") int authorId,
+                                @RequestParam(value = "author", defaultValue = ALL_AUTHORS) int authorId,
                                 @RequestParam(value = "sort", defaultValue = DEFAULT_SORT) CommentSortField sortField,
                                 @RequestParam(value = "order", defaultValue = DEFAULT_ORDER) Order order) {
         CommentPaginationDto paginationDto = CommentPaginationDto.builder()

@@ -108,12 +108,14 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private void initTagsIfNotExist(Set<Tag> tags) {
-        for (Tag tag : tags) {
-            Optional<Tag> tagEntity = tagRepository.findByName(tag.getName());
-            tagEntity.ifPresentOrElse(
-                    value->tag.setId(value.getId()),
-                    () -> tag.setId(tagRepository.save(tag).getId())
-            );
+        if (tags != null) {
+            for (Tag tag : tags) {
+                Optional<Tag> tagEntity = tagRepository.findByName(tag.getName());
+                tagEntity.ifPresentOrElse(
+                        value -> tag.setId(value.getId()),
+                        () -> tag.setId(tagRepository.save(tag).getId())
+                );
+            }
         }
     }
 

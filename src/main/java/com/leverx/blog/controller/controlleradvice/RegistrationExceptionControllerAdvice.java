@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.mail.MessagingException;
 
 @ControllerAdvice
-public class RegistrationExceptionHandler extends ResponseEntityExceptionHandler {
+public class RegistrationExceptionControllerAdvice extends ResponseEntityExceptionHandler {
     private static final String CONSTRAINT_MESSAGE = "User with this data already exists:( " +
             "Try another email!";
 

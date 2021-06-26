@@ -39,22 +39,8 @@ public class RegistrationService {
         this.redisTemplate = redisTemplate;
     }
 
-    public void register(UserDto userDto) {
-        Optional<User> dbUser = userRepository.findUserByEmail(userDto.getEmail());
-        if (dbUser.isPresent() && dbUser.get().isActivated()) {
-            throw new UserAlreadyExistsException("User already exists!");
-        }
-        User user;
-        if (dbUser.isEmpty()) {
-            user = UserMapping.mapToEntity(userDto);
-            user.setCreatedAt(new Date());
-            user.setPassword(cryptPassword(userDto.getPassword()));
-            user.setRoles(Collections.singleton(Role.USER_ROLE));
-            user = userRepository.save(user);
-        } else {
-            user = dbUser.get();
-        }
-
+    public void  register(UserDto userDto) {
+        User user = createUser(userDto);
         int hash = user.hashCode();
         redisTemplate.opsForValue().set(hash, user.getId(), 24, TimeUnit.HOURS);
         sendConfirmMessage(userDto.getEmail(), hash);
@@ -79,4 +65,21 @@ public class RegistrationService {
         return passwordEncoder.encode(password);
     }
 
+    private User createUser(UserDto userDto) {
+        Optional<User> dbUser = userRepository.findUserByEmail(userDto.getEmail());
+        if (dbUser.isPresent() && dbUser.get().isActivated()) {
+            throw new UserAlreadyExistsException("User already exists!");
+        }
+        User user;
+        if (dbUser.isEmpty()) {
+            user = UserMapping.mapToEntity(userDto);
+            user.setCreatedAt(new Date());
+            user.setPassword(cryptPassword(userDto.getPassword()));
+            user.setRoles(Collections.singleton(Role.USER_ROLE));
+            user = userRepository.save(user);
+        } else {
+            user = dbUser.get();
+        }
+        return user;
+    }
 }
