@@ -30,7 +30,7 @@ public class ArticleController {
     }
 
     @GetMapping("/articles_by")
-    public ResponseEntity<List<ArticleDto>> getArticlesByTags(@RequestParam("tags")String[] tagNames) {
+    public ResponseEntity<List<ArticleDto>> getArticlesByTags(@RequestParam("tags") String[] tagNames) {
         return ResponseEntity.ok(articleService.findAllByTagNames(tagNames));
     }
 

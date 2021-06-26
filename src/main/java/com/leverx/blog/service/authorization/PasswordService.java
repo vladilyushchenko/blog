@@ -14,6 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class PasswordService {
+    private static final String RESET_MESSAGE_WITHOUT_HASH =
+            "Hello! Make POST-request to reset your password via this link:" +
+                    "http://localhost:8080/auth/reset/";
+    private static final String RESET_TOPIC = "News agency password reset";
+
     private final Map<Integer, String> waitingForReset = new ConcurrentHashMap<>();
     private final UserRepository userRepository;
     private final MailSenderService mailSender;
@@ -43,7 +48,6 @@ public class PasswordService {
         User user = userRepository.findUserByEmail(email).get();
         user.setPassword(cryptPassword(resetDto.getPassword()));
         userRepository.save(user);
-        // in future make own query with @Query annotation
     }
 
     private boolean userExists(String email) {
@@ -52,9 +56,7 @@ public class PasswordService {
 
     private void sendConfirmMessage(String email, int hash) {
         try {
-            mailSender.sendEmail(email, "News agency password reset",
-                    "Hello! Make POST-request to reset your password via this link:" +
-                            "http://localhost:8080/auth/reset/" + hash);
+            mailSender.sendEmail(email, RESET_TOPIC,RESET_MESSAGE_WITHOUT_HASH + hash);
         } catch (MessagingException e) {
             throw new IncorrectEmailDataException(e);
         }

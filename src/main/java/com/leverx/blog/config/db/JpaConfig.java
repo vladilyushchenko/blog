@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Objects;
 import java.util.Properties;
-
-import static org.hibernate.cfg.AvailableSettings.*;
 
 @Configuration
 @EnableTransactionManagement
@@ -41,29 +38,29 @@ public class JpaConfig {
 
         final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
-        entityManagerFactoryBean.setJpaProperties(jpaProperties());
+        entityManagerFactoryBean.setJpaProperties(additionalProperties());
 
         return entityManagerFactoryBean;
     }
 
-    final Properties jpaProperties() {
+    final Properties additionalProperties() {
         final Properties hibernateProperties = new Properties();
-        hibernateProperties.setProperty(DIALECT,
-                Objects.requireNonNull(env.getProperty(DIALECT)));
-        hibernateProperties.setProperty(USE_SECOND_LEVEL_CACHE,
-                Objects.requireNonNull(env.getProperty(USE_SECOND_LEVEL_CACHE)));
-        hibernateProperties.setProperty(USE_QUERY_CACHE,
-                Objects.requireNonNull(env.getProperty(USE_QUERY_CACHE)));
+        hibernateProperties.setProperty("hibernate.dialect",
+                env.getProperty("hibernate.dialect"));
+        hibernateProperties.setProperty("hibernate.cache.use_second_level_cache",
+                env.getProperty("hibernate.cache.use_second_level_cache"));
+        hibernateProperties.setProperty("hibernate.cache.use_query_cache",
+                env.getProperty("hibernate.cache.use_query_cache"));
         return hibernateProperties;
     }
 
     @Bean
     public DataSource dataSource() {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(Objects.requireNonNull(env.getProperty(DRIVER)));
-        dataSource.setUrl(Objects.requireNonNull(env.getProperty(JPA_JDBC_URL)));
-        dataSource.setUsername(Objects.requireNonNull(env.getProperty(JPA_JDBC_USER)));
-        dataSource.setPassword(Objects.requireNonNull(env.getProperty(JPA_JDBC_PASSWORD)));
+        dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
+        dataSource.setUrl(env.getProperty("jdbc.url"));
+        dataSource.setUsername(env.getProperty("jdbc.username"));
+        dataSource.setPassword(env.getProperty("jdbc.password"));
         return dataSource;
     }
 
