@@ -7,7 +7,7 @@ public interface UserService {
 
     int findIdByEmail(String email);
 
-    void save(UserDto userDto);
+    UserDto save(UserDto userDto);
 
     boolean existsByEmail(String email);
 

@@ -9,9 +9,7 @@ import com.leverx.blog.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +17,7 @@ import java.util.stream.Collectors;
 public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
     private final TagCountMapper tagCountMapper;
+
 
     @Override
     public List<TagsCountDto> findTagsCount() {
@@ -31,18 +30,29 @@ public class TagServiceImpl implements TagService {
     @Override
     public void initTagsIfNotExist(Set<Tag> tags) {
         if (tags != null) {
-            deleteExistingTags(tags);
-            tagRepository.saveAll(tags);
+            Set<Tag> newTags = getNewTagsAndInit(tags);
+            tagRepository.saveAll(newTags);
         }
     }
 
-    private void deleteExistingTags(Set<Tag> newTags) {
-        Set<Tag> allTags = new HashSet<>();
-        tagRepository.findAll().forEach(allTags::add);
-        newTags.forEach(tag -> {
-            if (allTags.contains(tag)) {
-                newTags.remove(tag);
+    private Set<Tag> getNewTagsAndInit(Set<Tag> tags) {
+        Map<String, Integer> tagIdByName = tagsListToMap(tagRepository.findAll());
+        Set<Tag> newTags = new HashSet<>();
+
+        tags.forEach(tag -> {
+            if (tagIdByName.containsKey(tag.getName())) {
+                tag.setId(tagIdByName.get(tag.getName()));
+            } else {
+                newTags.add(tag);
             }
-        });
+         });
+
+        return newTags;
+    }
+
+    private Map<String, Integer> tagsListToMap(List<Tag> tags) {
+        Map<String, Integer> map = new HashMap<>();
+        tags.forEach(tag -> map.put(tag.getName(), tag.getId()));
+        return map;
     }
 }

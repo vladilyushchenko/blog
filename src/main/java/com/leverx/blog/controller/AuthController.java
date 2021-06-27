@@ -4,6 +4,7 @@ import com.leverx.blog.dto.LoginDto;
 import com.leverx.blog.dto.PasswordResetDto;
 import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.security.jwt.JwtProvider;
+import com.leverx.blog.service.LoginService;
 import com.leverx.blog.service.PasswordService;
 import com.leverx.blog.service.RegistrationService;
 import com.leverx.blog.service.UserService;
@@ -19,8 +20,8 @@ import javax.validation.Valid;
 public class AuthController {
     private final RegistrationService registrationService;
     private final PasswordService passwordService;
-    private final UserService userService;
     private final JwtProvider jwtProvider;
+    private final LoginService loginService;
 
     @PostMapping
     public void register(@Valid @RequestBody UserDto form) {
@@ -29,8 +30,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginDto loginDto) {
-        UserDto user = userService.findByEmail(loginDto.getEmail());
-        String token = jwtProvider.generateToken(user.getEmail());
+        loginService.authorize(loginDto);
+        String token = jwtProvider.generateToken(loginDto.getEmail());
         return ResponseEntity.ok(token);
     }
 

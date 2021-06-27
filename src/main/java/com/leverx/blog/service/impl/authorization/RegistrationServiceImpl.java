@@ -4,7 +4,9 @@ import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.entity.Role;
 import com.leverx.blog.entity.User;
 import com.leverx.blog.exception.IncorrectEmailDataException;
+import com.leverx.blog.exception.NotFoundEntityException;
 import com.leverx.blog.exception.UserAlreadyExistsException;
+import com.leverx.blog.exception.UserNotActivatedException;
 import com.leverx.blog.mapper.UserMapper;
 import com.leverx.blog.service.MailSenderService;
 import com.leverx.blog.service.RedisService;
@@ -33,10 +35,9 @@ public class RegistrationServiceImpl implements com.leverx.blog.service.Registra
     private final RedisService redisService;
     private final UserMapper userMapper;
 
-
     public void register(UserDto userDto) {
         User user = createUserIfNotExists(userDto);
-        userService.save(userMapper.mapToDto(user));
+        user.setId(userService.save(userMapper.mapToDto(user)).getId());
         int hash = user.hashCode();
         redisService.add(hash, user.getId(), TIMEOUT_HOURS, TimeUnit.HOURS);
         sendConfirmMessage(userDto.getEmail(), hash);
@@ -62,8 +63,16 @@ public class RegistrationServiceImpl implements com.leverx.blog.service.Registra
     }
 
     private User createUserIfNotExists(UserDto userDto) {
-        if (userService.existsByEmail(userDto.getEmail())) {
-            throw new UserAlreadyExistsException("User already exists!");
+        try {
+            UserDto dbUser = userService.findByEmail(userDto.getEmail());
+            if (!dbUser.isActivated()) {
+                throw new UserNotActivatedException(String.format("User with email %s not activated!",
+                        userDto.getEmail()));
+            } else {
+                throw new UserAlreadyExistsException(String.format("User with email %s already exists!",
+                        userDto.getEmail()));
+            }
+        } catch (NotFoundEntityException ignored) {
         }
         return createUser(userDto);
     }
