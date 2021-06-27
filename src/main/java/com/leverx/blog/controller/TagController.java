@@ -1,7 +1,7 @@
 package com.leverx.blog.controller;
 
+import com.leverx.blog.dto.TagsCountDto;
 import com.leverx.blog.service.TagService;
-import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +17,7 @@ public class TagController {
     }
 
     @GetMapping("/tags-cloud")
-    public ResponseEntity<List<Pair<String, Integer>>> getTagCount() {
+    public ResponseEntity<List<TagsCountDto>> getTagsCount() {
         return ResponseEntity.ok(tagService.findTagsCount());
     }
 }

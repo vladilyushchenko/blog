@@ -1,10 +1,12 @@
-package com.leverx.blog.dto.mapping;
+package com.leverx.blog.mapper;
 
 import com.leverx.blog.dto.CommentDto;
 import com.leverx.blog.entity.Comment;
+import org.springframework.stereotype.Component;
 
-public class CommentMapping {
-    public static Comment mapToEntity(CommentDto commentDto) {
+@Component
+public class CommentMapper {
+    public Comment mapToEntity(CommentDto commentDto) {
         Comment comment = new Comment();
         comment.setAuthorId(commentDto.getAuthorId());
         comment.setMessage(commentDto.getMessage());
@@ -14,7 +16,7 @@ public class CommentMapping {
         return comment;
     }
 
-    public static CommentDto mapToDto(Comment comment) {
+    public CommentDto mapToDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setArticleId(comment.getArticleId());
         commentDto.setMessage(comment.getMessage());

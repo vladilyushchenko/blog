@@ -1,19 +1,22 @@
-package com.leverx.blog.config.security.jwt;
+package com.leverx.blog.security.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletResponse;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
 @Component
 @Log
+@PropertySource({"classpath:jwt.yaml"})
 public class JwtProvider {
-    private final String jwtSecret = "javamaster";
+    @Value("${jwtsecret}")
+    private String jwtSecret;
 
     public String generateToken(String login) {
         Date date = Date.from(LocalDate.now().plusDays(15).atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -24,24 +27,19 @@ public class JwtProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token, ServletResponse servletResponse) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expEx) {
-            processInvalidToken(servletResponse);
             log.severe("Token expired");
         } catch (UnsupportedJwtException unsEx) {
-            processInvalidToken(servletResponse);
             log.severe("Unsupported jwt");
         } catch (MalformedJwtException mjEx) {
-            processInvalidToken(servletResponse);
             log.severe("Malformed jwt");
         } catch (SignatureException sEx) {
-            processInvalidToken(servletResponse);
             log.severe("Invalid signature");
         } catch (Exception e) {
-            processInvalidToken(servletResponse);
             log.severe("invalid token");
         }
         return false;
@@ -50,9 +48,5 @@ public class JwtProvider {
     public String getLoginFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
         return claims.getSubject();
-    }
-
-    private void processInvalidToken(ServletResponse response) {
-        response.setContentLength(0);
     }
 }

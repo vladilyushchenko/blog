@@ -1,11 +1,13 @@
 package com.leverx.blog.controller;
 
 import com.leverx.blog.dto.ArticleDto;
-import com.leverx.blog.dto.ArticlePaginationDto;
 import com.leverx.blog.entity.enums.ArticleSortField;
 import com.leverx.blog.entity.enums.Order;
 import com.leverx.blog.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,18 +38,16 @@ public class ArticleController {
 
     @GetMapping("/articles")
     public ResponseEntity<List<ArticleDto>> getFilteredArticles(
-                                @RequestParam(value = "skip", defaultValue = DEFAULT_SKIP) int skip,
-                                @RequestParam(value = "limit", defaultValue = DEFAULT_LIMIT) int limit,
-                                @RequestParam(value = "author") int authorId,
-                                @RequestParam(value = "sort", defaultValue = DEFAULT_SORT) ArticleSortField sortField,
-                                @RequestParam(value = "order", defaultValue = DEFAULT_ORDER) Order order) {
-        ArticlePaginationDto paginationDto = ArticlePaginationDto.builder()
-                .skip(skip)
-                .limit(limit)
-                .authorId(authorId)
-                .sortField(sortField)
-                .order(order).build();
-        return ResponseEntity.ok(articleService.findAllByPaginationDto(paginationDto));
+            @RequestParam(value = "skip", defaultValue = DEFAULT_SKIP) int skip,
+            @RequestParam(value = "limit", defaultValue = DEFAULT_LIMIT) int limit,
+            @RequestParam(value = "author", required = false) Integer authorId,
+            @RequestParam(value = "sort", defaultValue = DEFAULT_SORT) ArticleSortField sortField,
+            @RequestParam(value = "order", defaultValue = DEFAULT_ORDER) Order order) {
+        Pageable pageable = PageRequest.of(skip, limit, Sort.by(
+                Sort.Direction.valueOf(order.name().toUpperCase()), sortField.name())
+        );
+        List<ArticleDto> dtos = articleService.findAllByAuthorAndPageable(authorId, pageable);
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping("/articles")
@@ -58,6 +58,7 @@ public class ArticleController {
     @PutMapping("/articles/{id}")
     public void updateArticle(@Valid @RequestBody ArticleDto articleDto, @PathVariable int id,
                               Principal principal) {
+
         articleService.updateById(articleDto, id, principal.getName());
     }
 

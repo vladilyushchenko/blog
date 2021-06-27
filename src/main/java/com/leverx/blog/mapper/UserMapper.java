@@ -1,12 +1,12 @@
-package com.leverx.blog.dto.mapping;
+package com.leverx.blog.mapper;
 
 import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.entity.User;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class UserMapping {
-    public static User mapToEntity(UserDto userDto) {
+@Component
+public class UserMapper {
+    public User mapToEntity(UserDto userDto) {
         User user = new User();
         user.setId(userDto.getId());
         user.setFirstName(userDto.getFirstName());
@@ -15,10 +15,11 @@ public class UserMapping {
         user.setEmail(userDto.getEmail());
         user.setCreatedAt(userDto.getCreatedAt());
         user.setRoles(userDto.getRoles());
+        user.setActivated(userDto.isActivated());
         return user;
     }
 
-    public static UserDto mapToDto(User user) {
+    public UserDto mapToDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setFirstName(user.getFirstName());
@@ -27,6 +28,7 @@ public class UserMapping {
         userDto.setPassword(user.getPassword());
         userDto.setRoles(user.getRoles());
         userDto.setCreatedAt(user.getCreatedAt());
+        userDto.setActivated(user.isActivated());
         return userDto;
     }
 }

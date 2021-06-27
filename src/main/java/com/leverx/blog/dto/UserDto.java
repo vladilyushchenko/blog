@@ -28,6 +28,8 @@ public class UserDto {
     @NotNull
     private String email;
 
+    private boolean activated;
+
     private Date createdAt;
 
     private Set<Role> roles;

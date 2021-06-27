@@ -10,7 +10,6 @@ public class PasswordResetDto {
     @NotNull
     private Integer hash;
 
-    @NotNull
     @NotEmpty
     private String password;
 }

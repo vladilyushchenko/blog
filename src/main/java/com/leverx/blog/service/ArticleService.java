@@ -1,7 +1,7 @@
 package com.leverx.blog.service;
 
 import com.leverx.blog.dto.ArticleDto;
-import com.leverx.blog.dto.ArticlePaginationDto;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface ArticleService {
 
     void deleteById(int id, String userEmail);
 
-    List<ArticleDto> findAllByPaginationDto(ArticlePaginationDto paginationDto);
+    List<ArticleDto> findAllByAuthorAndPageable(Integer authorId, Pageable pageable);
 
     List<ArticleDto> findAllByTagNames(String[] tagNames);
 }

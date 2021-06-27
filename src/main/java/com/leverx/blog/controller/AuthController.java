@@ -1,13 +1,13 @@
 package com.leverx.blog.controller;
 
-import com.leverx.blog.config.security.jwt.JwtProvider;
 import com.leverx.blog.dto.LoginDto;
 import com.leverx.blog.dto.PasswordResetDto;
 import com.leverx.blog.dto.UserDto;
+import com.leverx.blog.security.jwt.JwtProvider;
+import com.leverx.blog.service.PasswordService;
+import com.leverx.blog.service.RegistrationService;
 import com.leverx.blog.service.UserService;
-import com.leverx.blog.service.authorization.PasswordService;
-import com.leverx.blog.service.authorization.RegistrationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,20 +15,12 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
     private final RegistrationService registrationService;
     private final PasswordService passwordService;
     private final UserService userService;
     private final JwtProvider jwtProvider;
-
-    @Autowired
-    public AuthController(RegistrationService registrationService, PasswordService passwordService,
-                          UserService userService, JwtProvider jwtProvider) {
-        this.registrationService = registrationService;
-        this.passwordService = passwordService;
-        this.userService = userService;
-        this.jwtProvider = jwtProvider;
-    }
 
     @PostMapping
     public void register(@Valid @RequestBody UserDto form) {

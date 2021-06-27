@@ -41,7 +41,7 @@ public class Article {
     @Temporal(TemporalType.DATE)
     private Date updatedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tags_articles",
                 joinColumns = @JoinColumn(name = "article_id"),
                 inverseJoinColumns = @JoinColumn(name = "tag_id"))

@@ -1,57 +1,56 @@
-package com.leverx.blog.service.authorization;
+package com.leverx.blog.service.impl.authorization;
 
-import com.leverx.blog.repository.UserRepository;
 import com.leverx.blog.dto.PasswordResetDto;
-import com.leverx.blog.entity.User;
+import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.exception.IncorrectEmailDataException;
-import com.leverx.blog.exception.NotFoundException;
+import com.leverx.blog.exception.NotFoundEntityException;
+import com.leverx.blog.service.MailSenderService;
+import com.leverx.blog.service.PasswordService;
+import com.leverx.blog.service.RedisService;
+import com.leverx.blog.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
-public class PasswordService {
+@RequiredArgsConstructor
+public class PasswordServiceImpl implements PasswordService {
     private static final String RESET_MESSAGE_WITHOUT_HASH =
             "Hello! Make POST-request to reset your password via this link:" +
                     "http://localhost:8080/auth/reset/";
     private static final String RESET_TOPIC = "News agency password reset";
+    private static final int TIMEOUT_HOURS = 24;
 
-    private final Map<Integer, String> waitingForReset = new ConcurrentHashMap<>();
-    private final UserRepository userRepository;
+    private final RedisService redisService;
+    private final UserService userService;
     private final MailSenderService mailSender;
     private final PasswordEncoder passwordEncoder;
 
-    public PasswordService(UserRepository userRepository, MailSenderService mailSender, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.mailSender = mailSender;
-        this.passwordEncoder = passwordEncoder;
-    }
-
     public void reset(String email) {
         if (!userExists(email)) {
-            throw new NotFoundException(String.format("User with email %s doesnt exist!", email));
+            throw new NotFoundEntityException(String.format("User with email %s doesnt exist!", email));
         }
         int hash = email.hashCode();
+        redisService.add(hash, email, TIMEOUT_HOURS, TimeUnit.HOURS);
         sendConfirmMessage(email, hash);
-        waitingForReset.put(hash, email);
     }
 
     public void confirmReset(PasswordResetDto resetDto) {
-        if (!waitingForReset.containsKey(resetDto.getHash())) {
-            throw new NotFoundException(String.format("It's no password-update request with hash %d",
+        if (!redisService.contains(resetDto.getHash())) {
+            throw new NotFoundEntityException(String.format("It's no password-update request with hash %d",
                     resetDto.getHash()));
         }
-        String email = waitingForReset.remove(resetDto.getHash());
-        User user = userRepository.findUserByEmail(email).get();
-        user.setPassword(cryptPassword(resetDto.getPassword()));
-        userRepository.save(user);
+        String email = String.valueOf(redisService.retrieve(resetDto.getHash()));
+        UserDto userDto = userService.findByEmail(email);
+        userDto.setPassword(cryptPassword(resetDto.getPassword()));
+        userService.save(userDto);
     }
 
     private boolean userExists(String email) {
-        return userRepository.findUserByEmail(email).isPresent();
+        return userService.existsByEmail(email);
     }
 
     private void sendConfirmMessage(String email, int hash) {

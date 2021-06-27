@@ -1,10 +1,10 @@
-package com.leverx.blog.config.security;
+package com.leverx.blog.security;
 
-import com.leverx.blog.repository.UserRepository;
+import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.entity.Role;
-import com.leverx.blog.entity.User;
 import com.leverx.blog.exception.UserNotActivatedException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.leverx.blog.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,34 +13,24 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserSecurityService implements UserDetailsService {
-    private final UserRepository userRepository;
-
-    @Autowired
-    public UserSecurityService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findUserByEmail(email);
-        if (user.isEmpty()) {
-            throw new UsernameNotFoundException(String.format("User with email" +
-                    " '%s' not found:(", email));
-        }
-
-        if (!user.get().isActivated()) {
+        UserDto user = userService.findByEmail(email);
+        if (!user.isActivated()) {
             throw new UserNotActivatedException("User not activated! Please activate your account!");
         }
-
         return new org.springframework.security.core.userdetails.User(
-                user.get().getEmail(),
-                user.get().getPassword(),
-                mapRolesAuthorities(user.get().getRoles()));
+                user.getEmail(),
+                user.getPassword(),
+                mapRolesAuthorities(user.getRoles())
+        );
     }
 
     private Collection<? extends GrantedAuthority> mapRolesAuthorities(Collection<Role> roles) {

@@ -1,12 +1,12 @@
-package com.leverx.blog.dto.mapping;
+package com.leverx.blog.mapper;
 
 import com.leverx.blog.dto.ArticleDto;
 import com.leverx.blog.entity.Article;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class ArticleMapping {
-    public static Article mapToEntity(ArticleDto articleDto) {
+@Component
+public class ArticleMapper {
+    public Article mapToEntity(ArticleDto articleDto) {
         Article article = new Article();
         article.setId(articleDto.getId());
         article.setText(articleDto.getText());
@@ -19,7 +19,7 @@ public class ArticleMapping {
         return article;
     }
 
-    public static ArticleDto mapToDto(Article article) {
+    public ArticleDto mapToDto(Article article) {
         ArticleDto articleDto = new ArticleDto();
         articleDto.setId(article.getId());
         articleDto.setStatus(article.getStatus());

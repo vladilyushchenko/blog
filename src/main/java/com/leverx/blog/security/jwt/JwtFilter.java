@@ -1,6 +1,7 @@
-package com.leverx.blog.config.security.jwt;
+package com.leverx.blog.security.jwt;
 
-import com.leverx.blog.config.security.UserSecurityService;
+import com.leverx.blog.security.UserSecurityService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,22 +20,23 @@ import static org.springframework.util.StringUtils.hasText;
 
 @Log
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
     public static final String AUTHORIZATION = "Authorization";
     private final JwtProvider jwtProvider;
     private final UserSecurityService userSecurityService;
-
-    public JwtFilter(JwtProvider jwtProvider, UserSecurityService userSecurityService) {
-        this.jwtProvider = jwtProvider;
-        this.userSecurityService = userSecurityService;
-    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         logger.info("do filter...");
         String token = getTokenFromRequest((HttpServletRequest) servletRequest);
-        if (token != null && jwtProvider.validateToken(token, servletResponse)) {
+        authenticate(token);
+        filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    private void authenticate(String token) {
+        if (token != null && jwtProvider.validateToken(token)) {
             String userLogin = jwtProvider.getLoginFromToken(token);
             UserDetails userDetails = userSecurityService.loadUserByUsername(userLogin);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
@@ -43,7 +45,6 @@ public class JwtFilter extends GenericFilterBean {
                             userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
-        filterChain.doFilter(servletRequest, servletResponse);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

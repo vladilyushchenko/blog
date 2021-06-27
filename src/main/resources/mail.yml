@@ -3,7 +3,8 @@ mail:
     host: smtp.gmail.com
     auth: true
     port: 587
-    starttls.enable: true
+    starttls:
+      enable: true
 
   user: blog.manager.vladislav@gmail.com
   password: babangida2002

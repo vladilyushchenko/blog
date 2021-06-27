@@ -1,7 +1,6 @@
 package com.leverx.blog.config;
 
 import com.leverx.blog.config.db.JpaConfig;
-import com.leverx.blog.config.security.SecurityConfig;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -9,7 +8,6 @@ import javax.servlet.Filter;
 
 public class DispatcherServletInitializer extends
         AbstractAnnotationConfigDispatcherServletInitializer {
-
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
@@ -28,8 +26,7 @@ public class DispatcherServletInitializer extends
 
     @Override
     protected Filter[] getServletFilters() {
-        CharacterEncodingFilter characterEncodingFilter =
-                new CharacterEncodingFilter();
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
         characterEncodingFilter.setEncoding("UTF-8");
         characterEncodingFilter.setForceEncoding(true);
         return new Filter[] {characterEncodingFilter};

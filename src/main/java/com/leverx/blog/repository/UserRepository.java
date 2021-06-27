@@ -15,8 +15,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("select u.id from User u where u.email = :email")
     Optional<Integer> findIdByEmail(@Param("email") String email);
 
+    // check @transactional
     @Transactional
     @Modifying
     @Query("update User u set u.activated = :activated where u.id = :id")
     void setActivatedById(@Param("id") int id, @Param("activated") boolean activated);
+
+    boolean existsByEmail(String email);
 }
