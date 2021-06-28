@@ -5,5 +5,5 @@ import com.leverx.blog.dto.UserDto;
 public interface RegistrationService {
     void register(UserDto userDto);
 
-    void confirmAndCreate(int hash);
+    void confirmAndCreate(String hash);
 }

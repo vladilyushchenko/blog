@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PasswordResetDto {
     @NotNull
-    private Integer hash;
+    private String hash;
 
     @NotEmpty
     private String password;

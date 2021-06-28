@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -38,19 +39,20 @@ public class RegistrationServiceImpl implements com.leverx.blog.service.Registra
     public void register(UserDto userDto) {
         User user = createUserIfNotExists(userDto);
         user.setId(userService.save(userMapper.mapToDto(user)).getId());
-        int hash = user.hashCode();
-        redisService.add(hash, user.getId(), TIMEOUT_HOURS, TimeUnit.HOURS);
-        sendConfirmMessage(userDto.getEmail(), hash);
+        String uuidHash = UUID.randomUUID().toString();
+        redisService.add(uuidHash, user.getId(), TIMEOUT_HOURS, TimeUnit.HOURS);
+        sendConfirmMessage(userDto.getEmail(), uuidHash);
     }
 
-    public void confirmAndCreate(int hash) {
-        if (redisService.contains(hash)) {
-            int userId = Integer.parseInt(String.valueOf(redisService.retrieve(hash)));
-            userService.setActivatedById(userId, true);
+    public void confirmAndCreate(String hash) {
+        if (!redisService.contains(hash)) {
+            throw new NotFoundEntityException(String.format("It's no password-update request with hash %s", hash));
         }
+        int userId = Integer.parseInt(String.valueOf(redisService.retrieve(hash)));
+        userService.setActivatedById(userId, true);
     }
 
-    private void sendConfirmMessage(String email, int hash) {
+    private void sendConfirmMessage(String email, String hash) {
         try {
             mailSender.sendEmail(email, CONFIRM_TOPIC, CONFIRM_MESSAGE_WITHOUT_HASH + hash);
         } catch (MessagingException e) {

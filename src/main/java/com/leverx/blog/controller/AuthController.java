@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @GetMapping("/confirm/{hash}")
-    public void confirm(@PathVariable int hash) {
+    public void confirm(@PathVariable String hash) {
         registrationService.confirmAndCreate(hash);
     }
 

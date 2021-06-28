@@ -4,6 +4,7 @@ import com.leverx.blog.dto.ArticleDto;
 import com.leverx.blog.entity.enums.ArticleSortField;
 import com.leverx.blog.entity.enums.Order;
 import com.leverx.blog.service.ArticleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,22 +19,13 @@ import java.util.List;
 import static com.leverx.blog.controller.FilterConstants.*;
 
 @RestController
+@RequiredArgsConstructor
 public class ArticleController {
     private final ArticleService articleService;
-
-    @Autowired
-    public ArticleController(ArticleService articleService) {
-        this.articleService = articleService;
-    }
 
     @GetMapping("/my")
     public ResponseEntity<List<ArticleDto>> getMyArticles(Principal principal) {
         return ResponseEntity.ok(articleService.findArticlesByEmail(principal.getName()));
-    }
-
-    @GetMapping("/articles_by")
-    public ResponseEntity<List<ArticleDto>> getArticlesByTags(@RequestParam("tags") String[] tagNames) {
-        return ResponseEntity.ok(articleService.findAllByTagNames(tagNames));
     }
 
     @GetMapping("/articles")
