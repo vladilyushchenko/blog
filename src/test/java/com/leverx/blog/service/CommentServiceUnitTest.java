@@ -31,9 +31,7 @@ public class CommentServiceUnitTest {
     @Test
     public void findCommentById_ShouldThrowNotExistsExceptionByNonExistingId() {
         Comment nonExisting = getNonExistingComment();
-
         when(mockCommentRepository.findById(nonExisting.getId())).thenReturn(Optional.empty());
-
         Assertions.assertThrows(NotFoundEntityException.class, () -> service.findCommentById(nonExisting.getId()));
     }
 

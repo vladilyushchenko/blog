@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
-// check how it works pp
 @Component
 public class EnumTypePostgreSql extends EnumType {
     @Override

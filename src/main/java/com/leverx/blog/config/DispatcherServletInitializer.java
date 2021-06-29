@@ -30,4 +30,6 @@ public class DispatcherServletInitializer extends AbstractAnnotationConfigDispat
         characterEncodingFilter.setForceEncoding(true);
         return new Filter[] {characterEncodingFilter};
     }
+
+
 }

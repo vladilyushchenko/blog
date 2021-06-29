@@ -93,7 +93,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<ArticleDto> findAllByTagNames(String[] tagNames) {
         return articleRepository.findDistinctByTags_NameIn(Set.of(tagNames)).stream()
-                .distinct() // TODO: maybe delete?
+                .distinct()
                 .map(articleMapper::mapToDto)
                 .collect(Collectors.toList());
     }

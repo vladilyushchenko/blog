@@ -87,7 +87,6 @@ public class RegistrationServiceImpl implements RegistrationService {
                         userDto.getEmail()));
             }
         } catch (NotFoundEntityException ignored) {
-            // if user doesnt exist at the moment in db
         }
     }
 

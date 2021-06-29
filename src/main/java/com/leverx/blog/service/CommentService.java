@@ -10,8 +10,6 @@ public interface CommentService {
 
     CommentDto save(CommentDto commentDto);
 
-    List<CommentDto> findCommentsByArticleId(int articleId);
-
     void deleteById(int id, String editorEmail);
 
     List<CommentDto> findAllByPaginationDto(CommentPaginationDto paginationDto);

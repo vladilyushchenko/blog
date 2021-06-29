@@ -52,14 +52,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDto> findCommentsByArticleId(int articleId) {
-        List<Comment> comments = commentRepository.findAllByArticleId(articleId);
-        return comments.stream()
-                .map(commentMapper::mapToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public void deleteById(int id, String editorEmail) {
         log.info(String.format("DELETING COMMENT WITH ID %d AND EDITOR %S", id, editorEmail));
 

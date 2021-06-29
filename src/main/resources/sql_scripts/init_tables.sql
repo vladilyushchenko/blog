@@ -43,9 +43,6 @@ create table if not exists articles (
     foreign key(author_id) references users(id)
 );
 
-insert into articles (title, text, author_id, created_at, status)
-values ('test title', 'test text', 1, '2021-06-29', 'PUBLIC') on conflict do nothing;
-
 create table if not exists comments (
     id serial primary key,
     message varchar (1000) not null,

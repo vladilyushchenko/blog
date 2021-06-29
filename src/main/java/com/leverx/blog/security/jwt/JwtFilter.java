@@ -29,7 +29,7 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-        logger.info("do filter...");
+        logger.info("FILTERING...");
         String token = getTokenFromRequest((HttpServletRequest) servletRequest);
         authenticate(token);
         filterChain.doFilter(servletRequest, servletResponse);

@@ -30,7 +30,14 @@ create table if not exists  users_roles (
 
 insert into users_roles (user_id, role_id) values (1, 1), (1, 2) on conflict do nothing;
 
-create type article_status as enum('PUBLIC', 'DRAFT');
+DO
+'
+BEGIN
+    CREATE TYPE article_status AS ENUM (''PUBLIC'', ''DRAFT'');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END;
+' LANGUAGE PLPGSQL;
 
 create table if not exists articles (
     id serial primary key,
@@ -55,9 +62,6 @@ create table if not exists comments (
     constraint article_reference foreign key (article_id) references articles(id),
     constraint users_reference foreign key (author_id) references users(id)
 );
-
-insert into comments (message, article_id, author_id, created_at)
-values ('test comment#1 for post #1', 1, 1, '2021-06-29') on conflict do nothing;
 
 create table if not exists tags (
     id serial primary key,

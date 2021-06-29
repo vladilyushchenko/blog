@@ -31,15 +31,15 @@ public class JwtProvider {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expEx) {
-            log.severe("Token expired");
+            log.info("Token expired");
         } catch (UnsupportedJwtException unsEx) {
-            log.severe("Unsupported jwt");
+            log.info("Unsupported jwt");
         } catch (MalformedJwtException mjEx) {
-            log.severe("Malformed jwt");
+            log.info("Malformed jwt");
         } catch (SignatureException sEx) {
-            log.severe("Invalid signature");
+            log.info("Invalid signature");
         } catch (Exception e) {
-            log.severe("invalid token");
+            log.info("invalid token");
         }
         return false;
     }

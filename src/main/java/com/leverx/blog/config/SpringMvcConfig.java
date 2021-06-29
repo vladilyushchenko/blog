@@ -10,4 +10,5 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan("com.leverx.blog")
 @EnableWebMvc
 public class SpringMvcConfig implements WebMvcConfigurer {
+
 }

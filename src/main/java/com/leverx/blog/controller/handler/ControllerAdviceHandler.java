@@ -31,13 +31,6 @@ public class ControllerAdviceHandler {
         return ResponseEntity.badRequest().body(exc.getMessage());
     }
 
-//    @ExceptionHandler(value = ConstraintViolationException.class)
-//    protected @ResponseBody ResponseEntity<String> handleConstraintException(
-//            RuntimeException exc, WebRequest request) {
-//        log.warn("ConstraintViolationException exception handled! Response status: " + HttpStatus.BAD_REQUEST);
-//        return ResponseEntity.badRequest().body(request.getDescription(true));
-//    }
-
     @ExceptionHandler(value = UserAlreadyExistsException.class)
     protected @ResponseBody ResponseEntity<String> handleUserAlreadyExistsException(
             RuntimeException exc, WebRequest request) {
