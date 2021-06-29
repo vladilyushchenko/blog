@@ -1,14 +1,15 @@
-package com.leverx.blog.service.impl.authorization;
+package com.leverx.blog.service.impl.auth;
 
 import com.leverx.blog.dto.PasswordResetDto;
 import com.leverx.blog.dto.UserDto;
 import com.leverx.blog.exception.IncorrectEmailDataException;
 import com.leverx.blog.exception.NotFoundEntityException;
+import com.leverx.blog.redis.RedisService;
 import com.leverx.blog.service.MailSenderService;
 import com.leverx.blog.service.PasswordService;
-import com.leverx.blog.service.RedisService;
 import com.leverx.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +17,10 @@ import javax.mail.MessagingException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PasswordServiceImpl implements PasswordService {
-    private static final String RESET_MESSAGE_WITHOUT_HASH =
-            "Hello! Make POST-request with body {\"hash\" : \"...\"," +
-                    "\"password\" : \"...\"} to reset your password via this link:" +
-                    "http://localhost:8080/auth/reset/";
     private static final String RESET_TOPIC = "News agency password reset";
     private static final int TIMEOUT_HOURS = 24;
 
@@ -32,6 +30,7 @@ public class PasswordServiceImpl implements PasswordService {
     private final PasswordEncoder passwordEncoder;
 
     public void reset(String email) {
+        log.info("PASSWORD RESET: CHECKING IF USER EXISTS, GENERATING HASH AND SENDING EMAIL");
         if (!userExists(email)) {
             throw new NotFoundEntityException(String.format("User with email %s doesnt exist!", email));
         }
@@ -41,6 +40,7 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     public void confirmReset(PasswordResetDto resetDto) {
+        log.info("PASSWORD RESET CONFIRMATION...");
         if (!redisService.contains(resetDto.getHash())) {
             throw new NotFoundEntityException(String.format("It's no password-update request with hash %s",
                     resetDto.getHash()));
@@ -56,8 +56,9 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     private void sendConfirmMessage(String email, String hash) {
+        log.info("SENDING PASSWORD RESET CONFIRMATION TO " + email);
         try {
-            mailSender.sendEmail(email, RESET_TOPIC,RESET_MESSAGE_WITHOUT_HASH + hash);
+            mailSender.sendEmail(email, RESET_TOPIC,hash);
         } catch (MessagingException e) {
             throw new IncorrectEmailDataException(e);
         }

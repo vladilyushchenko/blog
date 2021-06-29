@@ -5,7 +5,6 @@ import com.leverx.blog.entity.enums.ArticleStatus;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Set;
 
@@ -13,11 +12,9 @@ import java.util.Set;
 public class ArticleDto {
     private int id;
 
-    @NotNull
     @NotEmpty
     private String title;
 
-    @NotNull
     @NotEmpty
     private String text;
 

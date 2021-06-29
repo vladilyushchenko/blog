@@ -37,7 +37,7 @@ public class CommentController {
     }
 
     @GetMapping("/comments/{commentId}")
-    public ResponseEntity<CommentDto> getCommentsByArticleId(@PathVariable int commentId) {
+    public ResponseEntity<CommentDto> findCommentById(@PathVariable int commentId) {
         return ResponseEntity.ok(commentService.findCommentById(commentId));
     }
 
@@ -47,7 +47,7 @@ public class CommentController {
     }
 
     @GetMapping("/{articleId}/comments")
-    public ResponseEntity<List<CommentDto>> getFilteredComments(
+    public ResponseEntity<List<CommentDto>> findFilteredComments(
                                 @PathVariable int articleId,
                                 @RequestParam(value = "skip", defaultValue = DEFAULT_SKIP) int skip,
                                 @RequestParam(value = "limit", defaultValue = DEFAULT_LIMIT) int limit,

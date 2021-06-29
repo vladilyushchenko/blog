@@ -7,20 +7,22 @@ import com.leverx.blog.repository.TagRepository;
 import com.leverx.blog.repository.projections.TagCountProjection;
 import com.leverx.blog.service.TagService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
     private final TagCountMapper tagCountMapper;
 
-
     @Override
     public List<TagsCountDto> findTagsCount() {
+        log.info("COUNTING TAGS WITH ITS COUNT");
         List<TagCountProjection> projections = tagRepository.countTags();
         return projections.stream()
                 .map(tagCountMapper::mapToDto)
@@ -36,6 +38,8 @@ public class TagServiceImpl implements TagService {
     }
 
     private Set<Tag> getNewTagsAndInit(Set<Tag> tags) {
+        log.info("ADDING NEW TAGS TO DATABASE");
+
         Map<String, Integer> tagIdByName = tagsListToMap(tagRepository.findAll());
         Set<Tag> newTags = new HashSet<>();
 
@@ -46,7 +50,6 @@ public class TagServiceImpl implements TagService {
                 newTags.add(tag);
             }
          });
-
         return newTags;
     }
 

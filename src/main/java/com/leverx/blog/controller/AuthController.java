@@ -7,7 +7,6 @@ import com.leverx.blog.security.jwt.JwtProvider;
 import com.leverx.blog.service.LoginService;
 import com.leverx.blog.service.PasswordService;
 import com.leverx.blog.service.RegistrationService;
-import com.leverx.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

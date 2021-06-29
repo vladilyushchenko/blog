@@ -10,11 +10,13 @@ public interface ArticleService {
 
     void updateById(ArticleDto articleDto, int id, String editorEmail);
 
-    List<ArticleDto> findArticlesByEmail(String email);
+    List<ArticleDto> findArticlesByAuthorEmail(String email);
 
     void deleteById(int id, String userEmail);
 
     List<ArticleDto> findAllByAuthorAndPageable(Integer authorId, Pageable pageable);
 
     List<ArticleDto> findAllByTagNames(String[] tagNames);
+
+    boolean existsById(int id);
 }

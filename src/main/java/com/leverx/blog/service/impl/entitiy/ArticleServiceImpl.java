@@ -12,6 +12,7 @@ import com.leverx.blog.service.ArticleService;
 import com.leverx.blog.service.TagService;
 import com.leverx.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,6 +36,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public ArticleDto save(ArticleDto articleDto, String authorEmail) {
+        log.info("SAVING ARTICLE WITH AUTHOR_EMAIL " + authorEmail);
+
         Article article = articleMapper.mapToEntity(articleDto);
         article.setAuthorId(userService.findIdByEmail(authorEmail));
         article.setCreatedAt(new Date());
@@ -46,6 +50,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void updateById(ArticleDto articleDto, int id, String editorEmail) {
+        log.info(String.format("UPDATING ARTICLE WITH ID %d AND EDITOR %s", id, editorEmail));
+
         Article article = articleRepository.findById(id).orElseThrow(()->{
             throw new NotFoundEntityException(Article.class, id);
         });
@@ -57,22 +63,9 @@ public class ArticleServiceImpl implements ArticleService {
         articleRepository.save(article);
     }
 
-    private void throwIfDoesntBelong(String editorEmail, Article article) {
-        UserDto editor = userService.findByEmail(editorEmail);
-        if (article.getAuthorId() != editor.getId()) {
-            throw new AccessDeniedException("This post doesn't belong to you!");
-        }
-    }
-
-    private void updateArticle(ArticleDto articleDto, Article article) {
-        article.setText(articleDto.getText());
-        article.setTitle(articleDto.getTitle());
-        article.setTags(articleDto.getTags());
-        article.setUpdatedAt(new Date());
-    }
-
     @Override
-    public List<ArticleDto> findArticlesByEmail(String email) {
+    public List<ArticleDto> findArticlesByAuthorEmail(String email) {
+        log.info("FIND ARTICLES WITH LAZY FETCHING OF TAGS, AUTHOR EMAIL : " + email);
         return fetchLazyTagsFromList(articleRepository.findArticlesByAuthorId(userService.findIdByEmail(email)))
                 .stream()
                 .map(articleMapper::mapToDto)
@@ -103,6 +96,25 @@ public class ArticleServiceImpl implements ArticleService {
                 .distinct() // TODO: maybe delete?
                 .map(articleMapper::mapToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean existsById(int id) {
+        return articleRepository.existsById(id);
+    }
+
+    private void throwIfDoesntBelong(String editorEmail, Article article) {
+        UserDto editor = userService.findByEmail(editorEmail);
+        if (article.getAuthorId() != editor.getId()) {
+            throw new AccessDeniedException("This post doesn't belong to you!");
+        }
+    }
+
+    private void updateArticle(ArticleDto articleDto, Article article) {
+        article.setText(articleDto.getText());
+        article.setTitle(articleDto.getTitle());
+        article.setTags(articleDto.getTags());
+        article.setUpdatedAt(new Date());
     }
 
     private List<Article> fetchLazyTagsFromList(List<Article> articles) {

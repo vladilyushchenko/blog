@@ -1,4 +1,4 @@
-package com.leverx.blog.service.impl.authorization;
+package com.leverx.blog.service.impl.auth;
 
 import com.leverx.blog.service.MailSenderService;
 import lombok.RequiredArgsConstructor;

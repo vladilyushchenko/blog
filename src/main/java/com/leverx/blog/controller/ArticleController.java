@@ -5,7 +5,6 @@ import com.leverx.blog.entity.enums.ArticleSortField;
 import com.leverx.blog.entity.enums.Order;
 import com.leverx.blog.service.ArticleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,7 +24,7 @@ public class ArticleController {
 
     @GetMapping("/my")
     public ResponseEntity<List<ArticleDto>> getMyArticles(Principal principal) {
-        return ResponseEntity.ok(articleService.findArticlesByEmail(principal.getName()));
+        return ResponseEntity.ok(articleService.findArticlesByAuthorEmail(principal.getName()));
     }
 
     @GetMapping("/articles")

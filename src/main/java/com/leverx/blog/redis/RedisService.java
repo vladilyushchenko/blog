@@ -1,4 +1,4 @@
-package com.leverx.blog.service;
+package com.leverx.blog.redis;
 
 import java.util.concurrent.TimeUnit;
 

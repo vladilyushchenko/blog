@@ -1,5 +1,6 @@
 package com.leverx.blog.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 @Table(name = "comments")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
     @Id
     @Column(name = "id")
